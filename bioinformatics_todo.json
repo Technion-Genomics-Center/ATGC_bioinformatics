@@ -1,0 +1,121 @@
+{
+    "title": "Bioinformatics Page Draft Revisions",
+    "categories": [
+        {
+            "category": "General Updates & Global Changes",
+            "tasks": [
+                {
+                    "id": "GEN_001",
+                    "task": "Remove IPA (Ingenuity Pathway Analysis) from the entire page.",
+                    "completed": true,
+                    "priority": "High"
+                },
+                {
+                    "id": "GEN_002",
+                    "task": "Add GSEA (Gene Set Enrichment Analysis) in place of IPA.",
+                    "completed": true,
+                    "priority": "High"
+                },
+                {
+                    "id": "GEN_003",
+                    "task": "Add more images/visuals from actual reports across ALL applications to showcase advanced analysis.",
+                    "completed": false,
+                    "priority": "Medium",
+                    "note": "Added many new interactive (synthetic) visuals across all sections. Real report screenshots still need to be supplied by the user and dropped into the placeholder slots (see spatial section's <!-- LIVE SITE --> pattern)."
+                }
+            ]
+        },
+        {
+            "category": "Methylation & Epigenomics",
+            "tasks": [
+                {
+                    "id": "MET_001",
+                    "task": "Add a dedicated section for DNA Methylation.",
+                    "completed": true,
+                    "priority": "Medium"
+                },
+                {
+                    "id": "MET_002",
+                    "task": "Include RRBS (Reduced Representation Bisulfite Sequencing) analysis.",
+                    "completed": true,
+                    "priority": "Medium"
+                }
+            ]
+        },
+        {
+            "category": "Metagenomics (16S)",
+            "tasks": [
+                {
+                    "id": "16S_001",
+                    "task": "Add Alpha and Beta diversity analysis details.",
+                    "completed": true,
+                    "priority": "Medium"
+                },
+                {
+                    "id": "16S_002",
+                    "task": "Insert a relevant 16S plot or data visualization (e.g., alpha/beta diversity plot).",
+                    "completed": true,
+                    "priority": "Medium"
+                }
+            ]
+        },
+        {
+            "category": "Single-Cell (SC) Analysis",
+            "tasks": [
+                {
+                    "id": "SC_001",
+                    "task": "Add plots for expression of specific genes.",
+                    "completed": true,
+                    "priority": "Medium"
+                },
+                {
+                    "id": "SC_002",
+                    "task": "Add another standard/impressive plot typically delivered in reports.",
+                    "completed": true,
+                    "priority": "Low"
+                }
+            ]
+        },
+        {
+            "category": "Genome Assembly",
+            "tasks": [
+                {
+                    "id": "ASM_001",
+                    "task": "Add an Assembly Analysis section featuring Oxford Nanopore data analysis (via their tool).",
+                    "completed": true,
+                    "priority": "Low"
+                },
+                {
+                    "id": "ASM_002",
+                    "task": "Include the fungal genome assembly work as an example.",
+                    "completed": true,
+                    "priority": "Low"
+                }
+            ]
+        },
+        {
+            "category": "Custom Projects",
+            "tasks": [
+                {
+                    "id": "CST_001",
+                    "task": "Create a 'Custom Analysis' section.",
+                    "completed": true,
+                    "priority": "Medium"
+                },
+                {
+                    "id": "CST_002",
+                    "task": "Highlight amplicon sequencing capabilities.",
+                    "completed": true,
+                    "priority": "Low"
+                },
+                {
+                    "id": "CST_003",
+                    "task": "Feature the CRISPR analysis project (done for Andy) as a specific example.",
+                    "completed": true,
+                    "priority": "Medium",
+                    "note": "CRISPR editing/indel-spectrum example added. Worded generically ('custom projects') because Andy's lab/full name was not provided — supply it to credit the project specifically."
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+# Local-only snapshots / backups (not tracked — git history is the real record)
+Archive/
+
+# Claude Code local settings & transcripts
+.claude/
+
+# R / RStudio working files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.rds
+*.qs
+
+# Rendered Rmd output is regenerated from source; keep the .Rmd, ignore the build
+rmd/**/*.html
+rmd/**/*_cache/
+rmd/**/*_files/
+
+# OS cruft
+Thumbs.db
+Desktop.ini
+.DS_Store
