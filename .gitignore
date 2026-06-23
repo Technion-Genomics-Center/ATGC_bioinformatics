@@ -24,3 +24,6 @@ Desktop.ini
 
 # Un-optimized source gif (the optimized HD-ezgif*.gif is the one the page uses)
 HD.gif
+
+# Landing-page source art (~24 MB of large PNGs; compressed copies are base64-embedded in index.html)
+landing/
