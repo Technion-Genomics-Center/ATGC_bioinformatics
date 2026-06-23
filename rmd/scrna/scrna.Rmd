@@ -30,23 +30,29 @@ pal <- c("Stroma"="#e82281","Sertoli"="#b388d9","Peritubular Myoid"="#289de0",
 ```
 
 ```{r umap, fig.width=6.4, fig.height=5.2}
-# Lobe layout / proportions mirror the real annotated UMAP.
+# Lobe layout / proportions mirror the real annotated UMAP. Each cluster is a
+# bounded, centre-dense disk (not a broad Gaussian) so it reads as a distinct,
+# solid island the way a real Seurat UMAP does. R = disk radius, ax/ay = aspect.
 lobes <- data.frame(
   ct = ct_levels,
-  cx = c(-4.6, 6.0, -6.1, 3.7, 0.4, -5.4, -0.6, 2.0),
-  cy = c( 0.6,-4.4, -6.1, 3.0, 6.0,  6.4, -3.6,-0.6),
-  sx = c( 1.7, 2.0,  1.5, 1.3, 0.7,  1.2,  0.8, 0.45),
-  sy = c( 2.8, 2.1,  1.4, 1.9, 1.5,  0.6,  0.8, 0.95),
-  rot= c( 0.18,0.05, 0.00,-0.55,0.20,-0.10, 0.00,-0.55),
-  n  = c( 640, 572,  567, 541, 122,   99,   31,   29)
+  cx = c(-6.5, 6.8, -6.2, 5.6, -0.6, -11.0,  0.6, 10.8),
+  cy = c( 2.8,-4.8, -6.2, 5.2,  8.2,   6.8, -4.2,  1.8),
+  R  = c( 3.2, 3.0,  2.7, 3.0,  1.8,   1.6,  1.1,  1.0),
+  ax = c( 0.80,1.05, 1.15,0.95, 1.05,  1.05, 1.00, 1.00),
+  ay = c( 1.30,1.00, 0.88,1.20, 0.95,  0.85, 1.00, 1.00),
+  rot= c( 0.15,0.05, 0.00,-0.30, 0.10,-0.10, 0.00, 0.00),
+  n  = c( 640, 572,  567, 541, 122,   99,    31,   29)
 )
 
 pts <- do.call(rbind, lapply(seq_len(nrow(lobes)), function(i){
-  r <- lobes[i, ]
-  gx <- rnorm(r$n) * r$sx; gy <- rnorm(r$n) * r$sy
-  co <- cos(r$rot);        si <- sin(r$rot)
-  data.frame(UMAP_1 = r$cx + gx*co - gy*si,
-             UMAP_2 = r$cy + gx*si + gy*co,
+  r   <- lobes[i, ]
+  ang <- runif(r$n, 0, 2*pi)
+  rad <- (runif(r$n)^0.6) * r$R                 # centre-dense, hard outer edge
+  ex  <- rad*cos(ang)*r$ax + rnorm(r$n)*0.13*r$R  # mild fuzz on the boundary
+  ey  <- rad*sin(ang)*r$ay + rnorm(r$n)*0.13*r$R
+  co  <- cos(r$rot); si <- sin(r$rot)
+  data.frame(UMAP_1 = r$cx + ex*co - ey*si,
+             UMAP_2 = r$cy + ex*si + ey*co,
              ct = r$ct)
 }))
 pts$ct <- factor(pts$ct, levels = ct_levels)
@@ -55,7 +61,7 @@ cent <- pts %>% group_by(ct) %>%
   summarise(UMAP_1 = median(UMAP_1), UMAP_2 = median(UMAP_2), .groups = "drop")
 
 ggplot(pts, aes(UMAP_1, UMAP_2, colour = ct)) +
-  geom_point(size = 0.5, alpha = 0.75, stroke = 0) +
+  geom_point(size = 0.7, alpha = 0.85, stroke = 0) +
   geom_text_repel(data = cent, aes(label = ct), colour = "#22323f",
                   size = 3.4, fontface = "bold", seed = 7,
                   bg.color = "white", bg.r = 0.12, box.padding = 0.1,
