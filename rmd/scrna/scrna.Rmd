@@ -1,0 +1,96 @@
+---
+title: "scRNA-seq example figures — ATGC services page"
+author: "ATGC / Hagay Ladany"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      dev = "svglite", fig.path = "figs/")
+library(pheatmap)
+library(svglite)
+library(grid)
+set.seed(7)
+```
+
+Synthetic / representative data only. Mirrors a real mouse-testis 10x dataset
+(8 cell types) so the figure on `index.html` looks like a genuine
+average-marker-expression heatmap without exposing project data.
+
+```{r marker-table}
+# Cell types in the same column order used by the page's UMAP, with the
+# recognizable marker genes for each (mouse testis).
+ct_levels <- c("Stroma","Sertoli","Peritubular Myoid","Germ",
+               "Endothelial","Macrophage","Leydig","Innate Lymph")
+
+markers <- list(
+  "Stroma"            = c("Dcn","Pdgfra","Col1a1","Inha"),
+  "Sertoli"           = c("Sox9","Clu","Rhox8","Ctsl"),
+  "Peritubular Myoid" = c("Acta2","Myh11","Tagln"),
+  "Germ"              = c("Dazl","Stra8","Zbtb16","Uchl1"),
+  "Endothelial"       = c("Pecam1","Cd34","Flt1"),
+  "Macrophage"        = c("Lyz2","Cd68","C1qa"),
+  "Leydig"            = c("Cyp11a1","Star","Hsd3b1"),
+  "Innate Lymph"      = c("Igkc","Ighm","Nkg7")
+)
+
+gene_ct <- unlist(lapply(names(markers), function(ct)
+  setNames(rep(ct, length(markers[[ct]])), markers[[ct]])))
+genes <- names(gene_ct)
+```
+
+```{r build-matrix}
+# Average expression per gene (row) across cell types (column):
+# strong on-target, mild spillover to a biologically-adjacent type, low noise.
+adjacent <- list(
+  "Stroma"            = "Peritubular Myoid",
+  "Peritubular Myoid" = "Stroma",
+  "Sertoli"           = "Germ",
+  "Germ"              = "Sertoli",
+  "Endothelial"       = "Stroma",
+  "Macrophage"        = "Innate Lymph",
+  "Innate Lymph"      = "Macrophage",
+  "Leydig"            = "Stroma"
+)
+
+M <- matrix(0, nrow = length(genes), ncol = length(ct_levels),
+            dimnames = list(genes, ct_levels))
+for (g in genes) {
+  own <- gene_ct[[g]]
+  base <- runif(length(ct_levels), 0.05, 0.45)          # low background
+  base[match(own, ct_levels)] <- runif(1, 2.6, 3.6)     # on-target high
+  adj <- adjacent[[own]]
+  if (!is.null(adj)) base[match(adj, ct_levels)] <- runif(1, 0.8, 1.4)
+  M[g, ] <- base
+}
+```
+
+```{r heatmap, fig.width=7.6, fig.height=7.2}
+ann_row <- data.frame(`Cell type` = factor(gene_ct[genes], levels = ct_levels),
+                      check.names = FALSE)
+rownames(ann_row) <- genes
+
+pal <- c("#289de0","#b388d9","#5a9fd4","#e0a022","#e8615a",
+         "#00a3b8","#2bb673","#9ccc5a")
+names(pal) <- ct_levels
+ann_colors <- list(`Cell type` = pal)
+
+heat_cols <- colorRampPalette(c("#2166ac","#4393c3","#f7f7f7",
+                                "#d6604d","#b2182b"))(101)
+
+pheatmap(M,
+         scale = "row",
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         color = heat_cols,
+         breaks = seq(-2, 2, length.out = 102),
+         annotation_row = ann_row,
+         annotation_colors = ann_colors,
+         annotation_names_row = FALSE,
+         gaps_row = head(cumsum(lengths(markers)), -1),
+         border_color = "#ffffff",
+         cellwidth = 26, cellheight = 14,
+         fontsize = 10, fontsize_row = 9, fontsize_col = 10,
+         angle_col = 45,
+         main = "Average marker-gene expression (row z-score)",
+         legend = TRUE)
+```
