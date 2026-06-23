@@ -3645,7 +3645,7 @@ function renderSpatial(body){
         <div class="panel">
           <p class="panel-title">What we offer</p>
           <p style="font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.62">We mostly run <b style="color:var(--ink)">10x Genomics</b> — Visium HD spatial and Chromium single-cell. Primary analysis in <b style="color:var(--ink)">Seurat</b>, delivered with <b style="color:var(--ink)">Loupe Browser</b> for interactive exploration, with <b style="color:var(--ink)">customizable</b> downstream analysis on request.</p>
-                  <div class="fig" id="hdgif-ph" style="position:relative;width:100%;aspect-ratio:500/322;border-radius:10px;border:1px dashed #c7d2dc;background:linear-gradient(120deg,#eef3f7,#f6fafc);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:13px;gap:5px;padding:12px"><span style="font-size:20px;line-height:1">&#9658;</span><span>Click to load Visium HD demo</span><span style="font-size:11px;color:var(--muted2)">animated GIF &middot; ~2 MB</span></div><img id="hdgif" alt="Visium HD spatial gene expression &mdash; graph-based clusters in Loupe Browser" data-src="HD-ezgif.com-optimize.gif" style="width:100%;border-radius:10px;border:1px solid var(--line);display:none">
+                  <div class="fig" id="hdgif-ph" style="position:relative;width:100%;aspect-ratio:500/322;border-radius:10px;border:1px dashed #c7d2dc;background:linear-gradient(120deg,#eef3f7,#f6fafc);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px;gap:5px;padding:12px"><span>Visium HD spatial demo</span><span style="font-size:11px;color:var(--muted2)">loads when you open the Visium HD tab &middot; ~2 MB</span></div><img id="hdgif" alt="Visium HD spatial gene expression &mdash; graph-based clusters in Loupe Browser" data-src="HD-ezgif.com-optimize.gif" style="width:100%;border-radius:10px;border:1px solid var(--line);display:none">
           <p class="panel-sub" style="margin-top:7px;margin-bottom:0">Visium HD — graph-based clusters in Loupe Browser (2 µm bins)</p>
         <p class="note">These are real example outputs. In Loupe Browser you pan, zoom and overlay any gene on the tissue — not everything has to live on the website.</p>
      </div>
@@ -5961,7 +5961,6 @@ function renderSpatial(body){
     hdImg.onload=()=>{hdImg.style.display="block";hdPh.style.display="none";};
     hdImg.onerror=()=>{hdPh.innerHTML="Could not load demo";};
     hdImg.src=hdImg.getAttribute("data-src");}
-  if(hdPh)hdPh.addEventListener("click",loadHD);
   tV.onclick=()=>{spTab(true);loadHD();};tA.onclick=()=>spTab(false);
 }
 
