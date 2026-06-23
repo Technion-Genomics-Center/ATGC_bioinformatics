@@ -1,0 +1,77 @@
+---
+title: "Spatial example figures — ATGC services page"
+author: "ATGC / Hagay Ladany"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      dev = "svglite", fig.path = "figs/")
+library(ggplot2)
+library(svglite)
+set.seed(11)
+```
+
+Synthetic / representative data only. A CosMx-style single-cell spatial map
+(imaging-based, sub-cellular resolution) for the AtoMx tab on `index.html`:
+annotated cells positioned in tissue, forming epithelial nests with an
+immune-rich stroma — the kind of figure a CosMx / AtoMx run produces.
+
+```{r cosmx, fig.width=6.6, fig.height=5.4}
+ct_levels <- c("Epithelial / Tumor","Fibroblast","T cell",
+               "Macrophage","Endothelial","B cell")
+pal <- c("Epithelial / Tumor"="#d6453d","Fibroblast"="#4f93ce",
+         "T cell"="#2bb673","Macrophage"="#f5a623",
+         "Endothelial"="#8e5fc4","B cell"="#00a3b8")
+
+field <- 100
+blob <- function(cx, cy, n, sd) data.frame(x = rnorm(n, cx, sd),
+                                            y = rnorm(n, cy, sd))
+
+# Epithelial nests (dense glandular blobs).
+nests <- data.frame(x = c(26,63,41,79,18,56),
+                    y = c(70,76,39,47,30,17),
+                    n = c(150,170,140,120,110,130), sd = c(6,6.5,5.5,5,5,6))
+epi <- do.call(rbind, Map(function(x,y,n,sd){d<-blob(x,y,n,sd); d$ct<-"Epithelial / Tumor"; d},
+                          nests$x, nests$y, nests$n, nests$sd))
+
+# Fibroblast / stroma: uniform tissue background.
+fib <- data.frame(x = runif(640,2,98), y = runif(640,2,98), ct = "Fibroblast")
+
+# Immune cells infiltrate the rim of each nest (ring) plus scatter.
+ring <- function(cx,cy,n,r){a<-runif(n,0,2*pi); rr<-r+rnorm(n,0,2.2)
+  data.frame(x=cx+rr*cos(a), y=cy+rr*sin(a))}
+tcell <- do.call(rbind, Map(function(x,y,sd){d<-ring(x,y,55,sd+4); d$ct<-"T cell"; d},
+                            nests$x, nests$y, nests$sd))
+tcell <- rbind(tcell, data.frame(x=runif(70,2,98), y=runif(70,2,98), ct="T cell"))
+mac <- do.call(rbind, Map(function(x,y,sd){d<-ring(x,y,26,sd+6); d$ct<-"Macrophage"; d},
+                          nests$x, nests$y, nests$sd))
+
+# Endothelial: short vessel-like streaks.
+vessel <- function(x0,y0,x1,y1,n){t<-seq(0,1,length.out=n)
+  data.frame(x=x0+(x1-x0)*t+rnorm(n,0,1.4), y=y0+(y1-y0)*t+rnorm(n,0,1.4))}
+endo <- rbind(vessel(10,55,48,60,40), vessel(50,20,85,30,38),
+              vessel(35,85,70,80,34))
+endo$ct <- "Endothelial"
+
+# B cell: one dense aggregate (tertiary lymphoid structure).
+bcell <- blob(88, 88, 90, 4); bcell$ct <- "B cell"
+
+cells <- rbind(epi, fib, tcell, mac, endo, bcell)
+cells <- cells[cells$x > 0 & cells$x < field & cells$y > 0 & cells$y < field, ]
+cells$ct <- factor(cells$ct, levels = ct_levels)
+
+ggplot(cells, aes(x, y, colour = ct)) +
+  geom_point(size = 0.85, alpha = 0.9, stroke = 0) +
+  scale_colour_manual(values = pal, name = NULL) +
+  guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1))) +
+  coord_equal(expand = FALSE) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "right",
+        legend.key.height = unit(14, "pt"),
+        legend.text = element_text(size = 10),
+        axis.title = element_blank(), axis.text = element_blank(),
+        panel.grid = element_blank(),
+        panel.border = element_rect(colour = "#d9e0e6", fill = NA),
+        plot.margin = margin(4,4,4,4))
+```
