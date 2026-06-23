@@ -6586,40 +6586,9 @@ function renderMethylation(body){
 
 /* 9. Genome Assembly — Oxford Nanopore */
 function renderAssembly(body){
-  const rng=mulberry32(2024);const bins=26;const counts=[];
-  for(let i=0;i<bins;i++){const center=i+1;let v=Math.exp(-Math.pow((Math.log(center)-1.7),2)/0.5)*1000;v*=(0.85+rng()*0.3);counts.push(v);}
-  const ncontig=42;let lens=[];for(let i=0;i<ncontig;i++)lens.push(Math.pow(rng(),2.4)*6.2e6+8e4);
-  lens.sort((a,b)=>b-a);const total=lens.reduce((a,b)=>a+b,0);
-  let acc=0,n50=0;for(const L of lens){acc+=L;if(acc>=total/2){n50=L;break;}}
   body.innerHTML=`
-   <div class="grid2">
-     <div class="panel">
-        <p class="panel-title">Nanopore read-length distribution</p>
-        <p class="panel-sub">Basecalled reads (Dorado). Long reads span repeats that short reads can't resolve.</p>
-        <div class="fig" id="rlhist"></div>
-     </div>
-     <div>
-        <div class="panel"><p class="panel-title">Assembly statistics</p><p class="panel-sub">fungal genome · Flye + Medaka polish</p>
-          <div class="stats" style="grid-template-columns:repeat(2,1fr)">
-            <div class="stat"><div class="v">${ncontig}</div><div class="l">contigs</div></div>
-            <div class="stat"><div class="v">${(total/1e6).toFixed(1)}M</div><div class="l">total length</div></div>
-            <div class="stat up"><div class="v">${(n50/1e6).toFixed(2)}M</div><div class="l">contig N50</div></div>
-            <div class="stat"><div class="v">${(lens[0]/1e6).toFixed(2)}M</div><div class="l">largest contig</div></div>
-            <div class="stat"><div class="v">48.6%</div><div class="l">GC content</div></div>
-            <div class="stat up"><div class="v">97.8%</div><div class="l">BUSCO complete</div></div>
-          </div>
-        </div>
-        <div class="panel" style="margin-top:16px"><p class="panel-title">BUSCO · completeness</p><p class="panel-sub">fungi_odb10 · single-copy orthologs</p><div id="busco"></div></div>
-        <p class="note">Long-read assemblies are polished, screened for contamination and assessed with QUAST + BUSCO before annotation.</p>
-     </div>
-   </div>
-   <div class="panel" style="margin-top:16px">
-     <p class="panel-title">Assembly contiguity (Nx)</p>
-     <p class="panel-sub">Contig length at each cumulative-genome percentile. N50 is where the curve crosses 50%.</p>
-     <div class="fig" id="nx"></div>
-   </div>
-   <div class="panel" style="margin-top:16px">
-     <p class="panel-title">Reference coverage · CP015204.1</p>
+   <div class="panel">
+     <p class="panel-title">Reference coverage · contig_7</p>
      <p class="panel-sub">Read depth across the 109 kb replicon (1 kb bins) — real Oxford Nanopore example (EPI2ME wf-bacterial-genomes). Hover for position &amp; depth.</p>
      <div class="fig" id="covtrack"></div>
    </div>
@@ -6641,33 +6610,7 @@ function renderAssembly(body){
         </div>
      </div>
    </div>`;
-  const W=560,H=300,m={l:46,r:14,t:14,b:42},mx=Math.max(...counts);
-  const X=i=>m.l+i/bins*(W-m.l-m.r),bw=(W-m.l-m.r)/bins*0.82,Y=v=>H-m.b-v/mx*(H-m.t-m.b);
-  const svg=E('svg',{viewBox:`0 0 ${W} ${H}`});document.getElementById('rlhist').appendChild(svg);
-  counts.forEach((v,i)=>{const r=E('rect',{x:X(i),y:Y(v),width:bw,height:H-m.b-Y(v),fill:'rgba(40,157,224,.55)',stroke:'#289de0','stroke-width':.6});
-    r.addEventListener('mousemove',ev=>showTip(`${(i+1)} kb<br>${Math.round(v)} reads`,ev.clientX,ev.clientY));
-    r.addEventListener('mouseleave',hideTip);svg.appendChild(r);});
-  [0,5,10,15,20,25].forEach(k=>svg.appendChild(Object.assign(E('text',{x:X(k),y:H-m.b+16,'text-anchor':'middle',class:'axlab'}),{textContent:k})));
-  svg.appendChild(Object.assign(E('text',{x:(m.l+W-m.r)/2,y:H-3,'text-anchor':'middle',class:'axtitle'}),{textContent:'read length (kb)'}));
-  const yt=E('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',class:'axtitle',transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`});yt.textContent='read count';svg.appendChild(yt);
-  const busco=[["Complete (single)",95.1,'--green'],["Complete (dup.)",2.7,'--cyan'],["Fragmented",1.0,'--orange'],["Missing",1.2,'--muted2']];
-  document.getElementById('busco').innerHTML=`<div style="display:flex;height:20px;border-radius:6px;overflow:hidden;border:1px solid var(--line)">${busco.map(b=>`<span title="${b[0]} ${b[1]}%" style="width:${b[1]}%;background:var(${b[2]})"></span>`).join('')}</div>
-    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--muted)">${busco.map(b=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(${b[2]});vertical-align:-1px"></span> ${b[0]} ${b[1]}%</span>`).join('')}</div>`;
-  const W2=1040,H2=240,m2={l:54,r:18,t:14,b:42};
-  const nsvg=E('svg',{viewBox:`0 0 ${W2} ${H2}`});document.getElementById('nx').appendChild(nsvg);
-  const maxLen=lens[0],NX=p=>m2.l+p/100*(W2-m2.l-m2.r),NY=v=>H2-m2.b-v/maxLen*(H2-m2.t-m2.b);
-  for(let gy=0;gy<=maxLen;gy+=2e6){nsvg.appendChild(E('line',{x1:m2.l,y1:NY(gy),x2:W2-m2.r,y2:NY(gy),class:'gridline'}));
-    nsvg.appendChild(Object.assign(E('text',{x:m2.l-8,y:NY(gy)+3,'text-anchor':'end',class:'axlab'}),{textContent:(gy/1e6)+'M'}));}
-  let cum=0,d='';lens.forEach((L,i)=>{const p0=cum/total*100;cum+=L;const p1=cum/total*100;
-    d+=(i===0?'M':'L')+` ${NX(p0).toFixed(1)} ${NY(L).toFixed(1)} L ${NX(p1).toFixed(1)} ${NY(L).toFixed(1)} `;});
-  nsvg.appendChild(E('path',{d,fill:'none',stroke:'#7d5ba6','stroke-width':2}));
-  nsvg.appendChild(E('line',{x1:NX(50),y1:m2.t,x2:NX(50),y2:H2-m2.b,stroke:'#fbac45','stroke-width':1.2,'stroke-dasharray':'4 4'}));
-  nsvg.appendChild(E('line',{x1:m2.l,y1:NY(n50),x2:W2-m2.r,y2:NY(n50),stroke:'#fbac45','stroke-width':1.2,'stroke-dasharray':'4 4'}));
-  nsvg.appendChild(Object.assign(E('text',{x:NX(50)+6,y:NY(n50)-6,class:'axlab',fill:'#e08a12'}),{textContent:`N50 = ${(n50/1e6).toFixed(2)} Mb`}));
-  [0,25,50,75,100].forEach(p=>nsvg.appendChild(Object.assign(E('text',{x:NX(p),y:H2-m2.b+16,'text-anchor':'middle',class:'axlab'}),{textContent:p+'%'})));
-  nsvg.appendChild(Object.assign(E('text',{x:(m2.l+W2-m2.r)/2,y:H2-3,'text-anchor':'middle',class:'axtitle'}),{textContent:'cumulative genome (%)'}));
-  const yt2=E('text',{x:16,y:(m2.t+H2-m2.b)/2,'text-anchor':'middle',class:'axtitle',transform:`rotate(-90 16 ${(m2.t+H2-m2.b)/2})`});yt2.textContent='contig length';nsvg.appendChild(yt2);
-  // ----- interactive reference-coverage track (CP015204.1, real depth) -----
+  // ----- interactive reference-coverage track (contig_7, real depth) -----
   const cov=[318.4,401.4,445.7,478.2,504.9,525.0,532.6,531.6,534.1,513.0,515.0,530.3,533.6,534.0,553.8,566.9,581.4,579.6,579.9,556.9,549.6,545.7,559.4,548.4,556.7,558.4,558.9,554.3,581.3,615.2,658.8,699.2,671.6,645.2,638.2,640.0,652.7,668.7,676.3,650.6,625.8,585.5,571.1,564.0,536.9,509.6,507.5,503.5,496.3,488.7,509.0,516.4,511.6,507.8,505.9,504.6,490.2,482.6,507.4,527.4,517.5,518.0,530.8,547.5,568.4,569.6,570.6,558.0,562.7,561.9,581.1,596.8,589.0,588.7,580.8,578.2,554.0,544.8,573.4,549.9,523.5,531.6,534.4,548.7,572.4,579.5,570.9,580.6,612.0,619.9,613.4,603.0,601.9,604.5,590.5,606.1,611.0,594.6,570.8,552.4,529.3,500.4,507.0,498.3,479.0,462.7,426.5,369.9,295.8];
   const CW=1040,CH=250,cm={l:56,r:16,t:16,b:38};
   const cmax=Math.max(...cov)*1.1, cmean=cov.reduce((a,b)=>a+b,0)/cov.length;
@@ -6680,7 +6623,7 @@ function renderAssembly(body){
   csvg.appendChild(E('line',{x1:cm.l,y1:cyF(cmean),x2:CW-cm.r,y2:cyF(cmean),stroke:'#fbac45','stroke-width':1.2,'stroke-dasharray':'5 4'}));
   csvg.appendChild(Object.assign(E('text',{x:CW-cm.r,y:cyF(cmean)-5,'text-anchor':'end',class:'axlab',fill:'#e08a12'}),{textContent:`mean ${cmean.toFixed(0)}×`}));
   [0,20,40,60,80,100].forEach(k=>csvg.appendChild(Object.assign(E('text',{x:cxF(k),y:CH-cm.b+15,'text-anchor':'middle',class:'axlab'}),{textContent:k})));
-  csvg.appendChild(Object.assign(E('text',{x:(cm.l+CW-cm.r)/2,y:CH-2,'text-anchor':'middle',class:'axtitle'}),{textContent:'position (kb) · CP015204.1'}));
+  csvg.appendChild(Object.assign(E('text',{x:(cm.l+CW-cm.r)/2,y:CH-2,'text-anchor':'middle',class:'axtitle'}),{textContent:'position (kb) · contig_7'}));
   const cur=E('line',{x1:cm.l,y1:cm.t,x2:cm.l,y2:CH-cm.b,stroke:'#e82281','stroke-width':1,opacity:0}),cdot=E('circle',{r:3.5,fill:'#e82281',opacity:0});
   csvg.appendChild(cur);csvg.appendChild(cdot);
   const cover=E('rect',{x:cm.l,y:cm.t,width:CW-cm.l-cm.r,height:CH-cm.t-cm.b,fill:'transparent'});csvg.appendChild(cover);
@@ -6688,7 +6631,7 @@ function renderAssembly(body){
     let i=Math.round((sx-cm.l)/(CW-cm.l-cm.r)*(cov.length-1));i=Math.max(0,Math.min(cov.length-1,i));
     cur.setAttribute('x1',cxF(i));cur.setAttribute('x2',cxF(i));cur.setAttribute('opacity',.6);
     cdot.setAttribute('cx',cxF(i));cdot.setAttribute('cy',cyF(cov[i]));cdot.setAttribute('opacity',1);
-    showTip(`<b>CP015204.1</b><br>${i} kb · ${cov[i].toFixed(0)}×`,ev.clientX,ev.clientY);});
+    showTip(`<b>contig_7</b><br>${i} kb · ${cov[i].toFixed(0)}×`,ev.clientX,ev.clientY);});
   cover.addEventListener('mouseleave',()=>{cur.setAttribute('opacity',0);cdot.setAttribute('opacity',0);hideTip();});
 }
 
