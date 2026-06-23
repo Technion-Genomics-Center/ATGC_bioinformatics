@@ -21,3 +21,6 @@ rmd/**/*_files/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Un-optimized source gif (the optimized HD-ezgif*.gif is the one the page uses)
+HD.gif
