@@ -1,0 +1,106 @@
+---
+title: "16S metagenomics example figures — ATGC services page"
+author: "ATGC / Hagay Ladany"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      dev = "svglite", fig.path = "figs/")
+library(ggplot2)
+library(svglite)
+library(tidyr)
+library(dplyr)
+library(scales)
+library(patchwork)
+set.seed(55)
+```
+
+Synthetic / representative data only. Mirrors the 16S section on `index.html`
+(6 samples, Control vs Treatment): taxonomic composition, Bray–Curtis PCoA,
+and α-diversity. Colours follow the page palette.
+
+```{r palette}
+grp_pal <- c("Control" = "#289de0", "Treatment" = "#e82281")
+tax_levels <- c("Bacteroides","Firmicutes","Proteobacteria","Actinobacteria",
+                "Verrucomicrobia","Fusobacteria","Other")
+tax_pal <- c("Bacteroides"="#289de0","Firmicutes"="#2bb673","Proteobacteria"="#e73334",
+             "Actinobacteria"="#fbac45","Verrucomicrobia"="#7d5ba6",
+             "Fusobacteria"="#e82281","Other"="#9aa7b0")
+```
+
+```{r composition, fig.width=5.7, fig.height=4.0}
+samples <- c("Ctrl-1","Ctrl-2","Ctrl-3","Treat-1","Treat-2","Treat-3")
+comp <- lapply(seq_along(samples), function(si){
+  base <- runif(length(tax_levels), 0.1, 0.6)
+  if (si > 3) { base[1:2] <- base[1:2] * 1.7; base[3] <- base[3] * 0.4 }  # treatment shift
+  base / sum(base)
+})
+df <- data.frame(sample = factor(rep(samples, each = length(tax_levels)), levels = samples),
+                 taxon  = factor(rep(tax_levels, length(samples)), levels = tax_levels),
+                 abundance = unlist(comp))
+
+ggplot(df, aes(sample, abundance, fill = taxon)) +
+  geom_col(width = 0.72, colour = "white", linewidth = 0.2) +
+  scale_fill_manual(values = tax_pal, name = NULL) +
+  scale_y_continuous(labels = percent, expand = expansion(c(0, 0.02))) +
+  labs(x = NULL, y = "relative abundance") +
+  theme_classic(base_size = 12) +
+  theme(legend.position = "right", legend.key.size = unit(12, "pt"),
+        legend.text = element_text(size = 9.5),
+        axis.text.x = element_text(angle = 30, hjust = 1, colour = "#42525e"),
+        axis.text.y = element_text(colour = "#6b7a86"))
+```
+
+```{r pcoa, fig.width=5.3, fig.height=4.2}
+groups <- data.frame(group = c("Control","Treatment"), cx = c(-1.25, 1.25))
+pc <- do.call(rbind, lapply(seq_len(nrow(groups)), function(gi){
+  g <- groups[gi, ]
+  data.frame(PCo1 = g$cx + rnorm(12, 0, 0.55),
+             PCo2 = rnorm(12, 0, 0.85),
+             group = g$group)
+}))
+pc$group <- factor(pc$group, levels = c("Control","Treatment"))
+
+ggplot(pc, aes(PCo1, PCo2, colour = group, fill = group)) +
+  geom_hline(yintercept = 0, colour = "#e6ebef", linewidth = 0.5) +
+  geom_vline(xintercept = 0, colour = "#e6ebef", linewidth = 0.5) +
+  stat_ellipse(geom = "polygon", alpha = 0.10, colour = NA, level = 0.95) +
+  geom_point(size = 2.6, alpha = 0.9, stroke = 0) +
+  scale_colour_manual(values = grp_pal, name = NULL) +
+  scale_fill_manual(values = grp_pal, name = NULL) +
+  labs(x = "PCo1 (41.7%)", y = "PCo2 (16.2%)") +
+  theme_classic(base_size = 12) +
+  theme(legend.position = "top", legend.justification = "right",
+        axis.text = element_text(colour = "#6b7a86"),
+        axis.title = element_text(colour = "#42525e"))
+```
+
+```{r alpha, fig.width=7.4, fig.height=3.7}
+mk <- function(cm, csd, tm, tsd){
+  data.frame(group = factor(rep(c("Control","Treatment"), each = 9),
+                            levels = c("Control","Treatment")),
+             value = c(rnorm(9, cm, csd), rnorm(9, tm, tsd)))
+}
+sh <- mk(3.42, 0.22, 2.93, 0.26)   # Shannon
+ob <- mk(218, 26, 176, 24)         # Observed ASVs
+
+alpha_panel <- function(d, ylab, sub){
+  ggplot(d, aes(group, value, fill = group, colour = group)) +
+    geom_violin(alpha = 0.22, colour = NA, width = 0.9, trim = FALSE) +   # transparent violin
+    geom_boxplot(width = 0.16, fill = "white", alpha = 0.9,
+                 outlier.shape = NA, linewidth = 0.6) +
+    geom_jitter(width = 0.07, size = 1.7, alpha = 0.85, stroke = 0) +
+    scale_fill_manual(values = grp_pal) +
+    scale_colour_manual(values = grp_pal) +
+    labs(x = NULL, y = ylab, subtitle = sub) +
+    theme_classic(base_size = 12) +
+    theme(legend.position = "none",
+          plot.subtitle = element_text(size = 10.5, colour = "#6b7a86"),
+          axis.text = element_text(colour = "#6b7a86"),
+          axis.title = element_text(colour = "#42525e"))
+}
+
+(alpha_panel(sh, "Shannon index", "Wilcoxon p = 0.004") |
+ alpha_panel(ob, "Observed ASVs", "Wilcoxon p = 0.011"))
+```
