@@ -175,6 +175,10 @@
 .cube-edge-r{right:0;background:linear-gradient(270deg,#fff 32%,rgba(255,255,255,0))}
 .cube-edge:hover{color:var(--blue)}
 @media(max-width:760px){.introrow{gap:14px}}
+
+/* hover-zoom on methylation panels (per w3schools zoom_hover) */
+.zoomp{transition:transform .28s ease, box-shadow .28s ease}
+.zoomp:hover{transform:scale(1.08);box-shadow:0 24px 50px -22px rgba(20,50,80,.55);position:relative;z-index:6}
 </style>
 </head>
 <body>
@@ -3876,7 +3880,6 @@ function renderCosMx(body){
             <li>ligand–receptor &amp; region-based DE</li>
           </ul>
         </div>
-        <p class="note">Delivered as a Seurat / Giotto object plus figures — cell-type maps, niche composition and spatial DE on request.</p>
      </div>
    </div>
    <div class="panel" style="margin-top:16px">
@@ -4363,7 +4366,7 @@ function renderMethylation(body){
     data.push({ctrl,treat,diff:treat-ctrl});}
   body.innerHTML=`
    <div class="grid2">
-     <div class="panel">
+     <div class="panel zoomp">
         <p class="panel-title">Per-cytosine methylation · Ctrl vs Treat</p>
         <p class="panel-sub">Each point is a CpG. Off-diagonal points are differentially methylated. Drag the threshold.</p>
         <div style="margin-bottom:10px;max-width:280px"><label style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;font-family:var(--mono)">|Δ methylation| ≥ <b style="color:var(--blue)" id="mdv">25%</b></label><input type="range" id="mdt" min="10" max="60" step="1" value="25"></div>
@@ -4375,15 +4378,32 @@ function renderMethylation(body){
         </div>
      </div>
      <div>
-        <div class="panel"><p class="panel-title">DMR genomic context</p><p class="panel-sub">where differential regions fall</p><div id="mann"></div></div>
+        <div class="panel zoomp"><p class="panel-title">DMR genomic context</p><p class="panel-sub">where differential regions fall</p><div id="mann"></div></div>
         <div class="stats" style="margin-top:16px">
           <div class="stat up"><div class="v" id="sHyper">0</div><div class="l">hyper-DMCs</div></div>
           <div class="stat down"><div class="v" id="sHypo">0</div><div class="l">hypo-DMCs</div></div>
           <div class="stat"><div class="v">81.4%</div><div class="l">mean CpG meth.</div></div>
         </div>
-        <p class="note">RRBS / WGBS reports add per-sample methylation distributions, DMR calling (DSS / methylKit), CpG-island annotation and gene-level summaries.</p>
+        <div class="panel zoomp" style="margin-top:16px">
+            <p class="panel-title">Top DMRs — per-embryo methylation</p>
+            <p class="panel-sub">violin = group density · point = one embryo · crossbar = group mean</p>
+            <img src="assets/meth-violin.svg" alt="Top DMR violins" style="width:100%;height:auto;display:block">
+         </div>
      </div>
-   </div>`;
+   </div>
+   <div class="grid2" style="margin-top:16px">
+      <div class="panel zoomp">
+         <p class="panel-title">Per-sample methylation at significant DMRs</p>
+         <p class="panel-sub">% methylation per embryo at each DMR (Control vs Treatment) — rows clustered, row colour = direction (hyper / hypo); grey = no CpG coverage. <span style="color:var(--muted2)">pheatmap</span></p>
+         <img src="assets/meth-heatmap.svg" alt="Per-sample DMR methylation heatmap" style="width:100%;height:auto;display:block;border-radius:8px">
+      </div>
+      <div class="panel zoomp">
+         <p class="panel-title">Pathway–gene chord</p>
+         <p class="panel-sub">curated pathways linked to their DMR genes (circlize) — gene arcs coloured by direction (red = hyper, blue = hypo)</p>
+         <img src="assets/meth-chord.svg" alt="Pathway-gene chord diagram" style="width:100%;height:auto;display:block">
+      </div>
+   </div>
+   `;
   const W=520,H=420,m={l:52,r:14,t:14,b:46};
   const X=v=>m.l+v*(W-m.l-m.r),Y=v=>H-m.b-v*(H-m.t-m.b);
   const svg=E('svg',{viewBox:`0 0 ${W} ${H}`});document.getElementById('meth').appendChild(svg);
@@ -4408,9 +4428,11 @@ function renderMethylation(body){
       dots[i].setAttribute('opacity',Math.abs(d.diff)>=th?.95:.4);});
     document.getElementById('mHyper').textContent=hyper;document.getElementById('mHypo').textContent=hypo;document.getElementById('mNs').textContent=ns;
     document.getElementById('sHyper').textContent=hyper;document.getElementById('sHypo').textContent=hypo;
-    const tot=hyper+hypo;
-    const ann=[["Promoter / CpG island",0.34,'--pink'],["Gene body (exon)",0.22,'--blue'],["Intron",0.19,'--green'],["Intergenic",0.18,'--orange'],["3′ UTR",0.07,'--purple']];
-    annEl.innerHTML=ann.map(a=>{const n=Math.round(a[1]*tot);return `<div style="display:flex;align-items:center;gap:8px;margin:7px 0;font-family:var(--mono);font-size:11px"><span style="width:118px;color:var(--muted)">${a[0]}</span><span style="flex:1;height:9px;background:var(--panel2);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:${a[1]*100}%;background:var(${a[2]})"></span></span><span style="width:26px;text-align:right">${n}</span></div>`;}).join('');
+    const ctxDef=[["Promoter / CpG island",'--pink'],["Gene body (exon)",'--blue'],["Intron",'--green'],["Intergenic",'--orange'],["3′ UTR",'--purple']];
+    const sig=hyper+hypo,k=Math.min(1,th/0.6);
+    const ctxBase=[0.28,0.24,0.21,0.20,0.07],ctxShift=[0.20,-0.02,-0.06,-0.10,-0.02];
+    let pr=ctxBase.map((b,i)=>Math.max(0.01,b+ctxShift[i]*k));const psum=pr.reduce((s,x)=>s+x,0);pr=pr.map(x=>x/psum);
+    annEl.innerHTML=ctxDef.map((a,i)=>{const n=Math.round(pr[i]*sig);return `<div style="display:flex;align-items:center;gap:8px;margin:7px 0;font-family:var(--mono);font-size:11px"><span style="width:118px;color:var(--muted)">${a[0]}</span><span style="flex:1;height:9px;background:var(--panel2);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:${(pr[i]*100).toFixed(1)}%;background:var(${a[1]})"></span></span><span style="width:26px;text-align:right">${n}</span></div>`;}).join('');
   }
   document.getElementById('mdt').addEventListener('input',recolor);recolor();
 }
