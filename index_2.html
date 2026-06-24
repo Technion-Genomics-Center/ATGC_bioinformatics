@@ -124,7 +124,7 @@
   @keyframes shimmer{0%{transform:translateX(-60%)}100%{transform:translateX(60%)}}
 
 /* landing / overview */
-.landing{animation:none}
+.landing{animation:none;margin-top:-12px}
 .land-hero{position:relative;border-radius:16px;overflow:hidden;margin-bottom:28px;box-shadow:0 24px 60px -40px rgba(20,50,80,.55)}
 .land-hero>img{width:100%;display:block;height:clamp(290px,40vw,430px);object-fit:cover;object-position:center}
 .hero-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:1}
@@ -137,7 +137,7 @@
 .land-stat{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:11px 18px;min-width:104px}
 .land-stat .v{font-family:var(--display);color:#fff;font-size:clamp(20px,2.4vw,27px);font-weight:700;line-height:1}
 .land-stat .l{font-family:var(--mono);color:#9fc2e0;font-size:10px;text-transform:uppercase;letter-spacing:.8px;margin-top:6px}
-.land-sec-h{font-family:var(--display);font-size:20px;color:#1b2a36;font-weight:700;margin:4px 0 4px}
+.land-sec-h{font-family:var(--display);font-size:20px;color:#1b2a36;font-weight:700;margin:0 0 6px}
 .land-sec-s{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:680px;line-height:1.55}
 .land-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .land-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;transition:transform .18s,box-shadow .18s,border-color .18s;display:flex;flex-direction:column}
@@ -154,22 +154,22 @@
 .introhead{flex:0 0 auto}
 .introhead .bio{margin:0}
 .introhead .brandline{margin:13px 0 0}
-.lede{flex:1 1 360px;max-width:none;color:var(--muted);font-size:14.5px;line-height:1.55;margin:0}
+.lede{flex:1 1 360px;max-width:none;color:var(--muted);font-size:16.5px;line-height:1.55;margin:0}
 .services{margin:16px 0 4px}
 /* service cube carousel */
-.cube-rail{position:relative;margin-top:2px;overflow:hidden}
-.cube-track{display:flex;width:max-content;padding:6px 0 14px;will-change:transform}
+.cube-rail{position:relative;margin-top:12px;overflow:hidden}
+.cube-track{display:flex;width:max-content;padding:58px 0 58px;position:relative;z-index:1}
 .cube-track::-webkit-scrollbar{display:none}
-.cube{flex:0 0 auto;margin-right:16px;width:188px;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;padding:0;text-align:left;font-family:inherit;transition:transform .16s,box-shadow .16s,border-color .16s}
-.cube:hover{transform:translateY(-3px);box-shadow:0 18px 36px -24px rgba(20,50,80,.5);border-color:color-mix(in srgb,var(--cc) 55%,var(--line))}
+.cube{flex:0 0 auto;margin-right:18px;width:232px;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;padding:0;text-align:left;font-family:inherit;transition:transform .16s,box-shadow .16s,border-color .16s}
+.cube:hover{transform:scale(1.4);box-shadow:0 28px 54px -16px rgba(0,0,0,.5);border-color:color-mix(in srgb,var(--cc) 55%,var(--line));position:relative;z-index:5}
 .cube-face{width:100%;aspect-ratio:1/1;background:#f3f8fc;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .cube-face img{width:100%;height:100%;object-fit:cover;display:block}
 .cube-ph{background:linear-gradient(150deg,color-mix(in srgb,var(--cc) 17%,#fff),color-mix(in srgb,var(--cc) 4%,#fff))}
 .cube-big{font-family:var(--mono);font-weight:700;font-size:30px;color:var(--cc);letter-spacing:.5px;border:2px solid color-mix(in srgb,var(--cc) 45%,#fff);border-radius:12px;padding:13px 16px;background:#fff}
 .cube-cap{display:flex;align-items:center;gap:8px;padding:11px 13px;border-top:1px solid var(--line)}
 .cube-ic{font-family:var(--mono);font-size:10px;font-weight:700;color:#fff;background:var(--cc);border-radius:5px;padding:3px 6px;white-space:nowrap}
-.cube-cap b{font-size:13px;color:#1b2a36;line-height:1.2}
-.cube-edge{position:absolute;top:0;bottom:14px;width:56px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#5b6b78;cursor:pointer;z-index:3;opacity:0;transition:opacity .2s;user-select:none}
+.cube-cap b{font-size:14px;color:var(--cc);line-height:1.25;font-weight:700}
+.cube-edge{position:absolute;top:0;bottom:0;width:56px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#5b6b78;cursor:pointer;z-index:3;opacity:0;transition:opacity .2s;user-select:none}
 .cube-rail:hover .cube-edge{opacity:1}
 .cube-edge-l{left:0;background:linear-gradient(90deg,#fff 32%,rgba(255,255,255,0))}
 .cube-edge-r{right:0;background:linear-gradient(270deg,#fff 32%,rgba(255,255,255,0))}
@@ -178,7 +178,8 @@
 
 /* hover-zoom on methylation panels (per w3schools zoom_hover) */
 .zoomp{transition:transform .28s ease, box-shadow .28s ease}
-.zoomp:hover{transform:scale(1.08);box-shadow:0 24px 50px -22px rgba(20,50,80,.55);position:relative;z-index:6}
+.zoomp:hover{transform:scale(1.2);box-shadow:0 26px 56px -20px rgba(20,50,80,.6);position:relative;z-index:6}
+
 </style>
 </head>
 <body>
@@ -276,7 +277,7 @@ const SERVICES=[
 const sv=document.getElementById('services');
 SERVICES.forEach((s,i)=>{
   const c=document.createElement('div');c.className='chip'+(i===0?' active':'');
-  c.innerHTML='<span class="ic">'+s.ic+'</span>'+s.name;c.dataset.sid=s.id;
+  c.innerHTML=s.name;c.dataset.sid=s.id;
   c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');select(s);};
   sv.appendChild(c);
 });
@@ -319,21 +320,20 @@ function renderLanding(body){
        </div>
      </div>
      <p class="land-sec-h">Explore interactive example reports</p>
-     <p class="land-sec-s">Hover the left or right edge to glide through the services, then pick one to open a live example report.</p>
      <div class="cube-rail">
        <div class="cube-edge cube-edge-l" aria-hidden="true">‹</div>
        <div class="cube-edge cube-edge-r" aria-hidden="true">›</div>
        <div class="cube-track" id="cubetrack">
-       <button class="cube" onclick="selectById('rnaseq')" style="--cc:#289de0"><div class="cube-face"><img src="assets/cube-rnaseq.webp" alt="RNA-seq (bulk) workflow"></div><div class="cube-cap"><span class="cube-ic">RNA</span><b>RNA-seq (bulk)</b></div></button>
-       <button class="cube" onclick="selectById('scrna')" style="--cc:#e82281"><div class="cube-face"><img src="assets/cube-scrna.webp" alt="scRNA-seq workflow"></div><div class="cube-cap"><span class="cube-ic">sc</span><b>scRNA-seq</b></div></button>
-       <button class="cube" onclick="selectById('visiumhd')" style="--cc:#2bb673"><div class="cube-face"><img src="assets/cube-visiumhd.webp" alt="Visium HD workflow"></div><div class="cube-cap"><span class="cube-ic">sp</span><b>Visium HD</b></div></button>
-       <button class="cube" onclick="selectById('cosmx')" style="--cc:#7d5ba6"><div class="cube-face"><img src="assets/cube-cosmx.webp" alt="CosMx + AtoMx workflow"></div><div class="cube-cap"><span class="cube-ic">cmx</span><b>CosMx + AtoMx</b></div></button>
-       <button class="cube" onclick="selectById('variant')" style="--cc:#fbac45"><div class="cube-face"><img src="assets/cube-variant.webp" alt="Variant Analysis workflow"></div><div class="cube-cap"><span class="cube-ic">var</span><b>Variant Analysis</b></div></button>
-       <button class="cube" onclick="selectById('chip')" style="--cc:#00a3b8"><div class="cube-face"><img src="assets/cube-chip.webp" alt="ChIP-seq workflow"></div><div class="cube-cap"><span class="cube-ic">chip</span><b>ChIP-seq</b></div></button>
-       <button class="cube" onclick="selectById('meta16s')" style="--cc:#2bb673"><div class="cube-face"><img src="assets/cube-meta16s.webp" alt="16S Metagenomics workflow"></div><div class="cube-cap"><span class="cube-ic">16S</span><b>16S Metagenomics</b></div></button>
-       <button class="cube" onclick="selectById('methyl')" style="--cc:#e73334"><div class="cube-face"><img src="assets/cube-methyl.webp" alt="DNA Methylation workflow"></div><div class="cube-cap"><span class="cube-ic">5mC</span><b>DNA Methylation</b></div></button>
-       <button class="cube" onclick="selectById('assembly')" style="--cc:#7d5ba6"><div class="cube-face"><img src="assets/cube-assembly.webp" alt="Genome Assembly workflow"></div><div class="cube-cap"><span class="cube-ic">asm</span><b>Genome Assembly</b></div></button>
-       <button class="cube" onclick="selectById('custom')" style="--cc:#5b6b78"><div class="cube-face"><img src="assets/cube-custom.webp" alt="Custom Analysis workflow"></div><div class="cube-cap"><span class="cube-ic">cst</span><b>Custom Analysis</b></div></button>
+       <button class="cube" onclick="selectById('rnaseq')" style="--cc:#289de0"><div class="cube-face"><img src="assets/cube-rnaseq.webp" alt="RNA-seq (bulk) workflow"></div><div class="cube-cap"><b>RNA-seq (bulk)</b></div></button>
+       <button class="cube" onclick="selectById('scrna')" style="--cc:#e82281"><div class="cube-face"><img src="assets/cube-scrna.webp" alt="scRNA-seq workflow"></div><div class="cube-cap"><b>scRNA-seq</b></div></button>
+       <button class="cube" onclick="selectById('visiumhd')" style="--cc:#2bb673"><div class="cube-face"><img src="assets/cube-visiumhd.webp" alt="Visium HD workflow"></div><div class="cube-cap"><b>Visium HD</b></div></button>
+       <button class="cube" onclick="selectById('cosmx')" style="--cc:#7d5ba6"><div class="cube-face"><img src="assets/cube-cosmx.webp" alt="CosMx + AtoMx workflow"></div><div class="cube-cap"><b>CosMx + AtoMx</b></div></button>
+       <button class="cube" onclick="selectById('variant')" style="--cc:#fbac45"><div class="cube-face"><img src="assets/cube-variant.webp" alt="Variant Analysis workflow"></div><div class="cube-cap"><b>Variant Analysis</b></div></button>
+       <button class="cube" onclick="selectById('chip')" style="--cc:#00a3b8"><div class="cube-face"><img src="assets/cube-chip.webp" alt="ChIP-seq workflow"></div><div class="cube-cap"><b>ChIP-seq</b></div></button>
+       <button class="cube" onclick="selectById('meta16s')" style="--cc:#2bb673"><div class="cube-face"><img src="assets/cube-meta16s.webp" alt="16S Metagenomics workflow"></div><div class="cube-cap"><b>16S Metagenomics</b></div></button>
+       <button class="cube" onclick="selectById('methyl')" style="--cc:#e73334"><div class="cube-face"><img src="assets/cube-methyl.webp" alt="DNA Methylation workflow"></div><div class="cube-cap"><b>DNA Methylation</b></div></button>
+       <button class="cube" onclick="selectById('assembly')" style="--cc:#7d5ba6"><div class="cube-face"><img src="assets/cube-assembly.webp" alt="Genome Assembly workflow"></div><div class="cube-cap"><b>Genome Assembly</b></div></button>
+       <button class="cube" onclick="selectById('custom')" style="--cc:#5b6b78"><div class="cube-face"><img src="assets/cube-custom.webp" alt="Custom Analysis workflow"></div><div class="cube-cap"><b>Custom Analysis</b></div></button>
        </div>
      </div>
    </div>`;
@@ -347,12 +347,12 @@ function renderLanding(body){
       vel+=(target-vel)*0.12;                    // ease speed toward target (no jump)
       pos+=vel;
       if(half>0){if(pos<=-half)pos+=half;else if(pos>=0)pos-=half;}
-      track.style.transform='translateX('+pos.toFixed(2)+'px)';
+      track.style.transform='translateX('+Math.round(pos)+'px)';
       requestAnimationFrame(tick);
     };
     const L=body.querySelector('.cube-edge-l'),R=body.querySelector('.cube-edge-r');
-    if(L){L.addEventListener('mouseenter',()=>target=FAST);L.addEventListener('mouseleave',()=>target=BASE);}
-    if(R){R.addEventListener('mouseenter',()=>target=-FAST);R.addEventListener('mouseleave',()=>target=BASE);}
+    if(L){L.addEventListener('mouseenter',()=>target=-FAST);L.addEventListener('mouseleave',()=>target=BASE);}
+    if(R){R.addEventListener('mouseenter',()=>target=FAST);R.addEventListener('mouseleave',()=>target=BASE);}
     track.addEventListener('mouseenter',()=>target=0);   // pause on cube hover
     track.addEventListener('mouseleave',()=>target=BASE);
     requestAnimationFrame(tick);
