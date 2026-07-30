@@ -1,0 +1,134 @@
+<!-- ATGC Applications page.
+     Paste into: a Beaver Builder HTML module on the Applications page.
+     The CSS lives separately in Additional CSS. -->
+
+<div class="atgc-apps">
+
+  <div class="apps-intro">
+    <div class="apps-rule"></div>
+    <p>The Azrieli Technion Genomics Center supports a broad range of genomic
+       applications, from sample QC through sequencing to full bioinformatics
+       analysis. Select an application to see what we offer.</p>
+    <p class="apps-note">
+      Planning an experiment that doesn't appear here?
+      <a href="https://atgc.net.technion.ac.il/contact/">Contact us</a> and we are happy to help you design it.
+    </p>
+  </div>
+
+  <section class="apps-group" style="--g:#1da5ff">
+    <div class="group-head">
+      <h2 class="group-name">Transcriptomics</h2>
+      <span class="group-line"></span>
+    </div>
+    <div class="apps-grid">
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/single-cell-transcriptomics/">
+        <span class="app-name">Single Cell Transcriptomics</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/spatial-transcriptomics/">
+        <span class="app-name">Spatial Transcriptomics</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/rna-seq/">
+        <span class="app-name">RNA-seq</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/mirna-seq/">
+        <span class="app-name">miRNA-seq</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="apps-group" style="--g:#fda13c">
+    <div class="group-head">
+      <h2 class="group-name">Genomics</h2>
+      <span class="group-line"></span>
+    </div>
+    <div class="apps-grid">
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-seq/">
+        <span class="app-name">DNA-seq</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/exome-seq/">
+        <span class="app-name">Exome-seq</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/amplicon-seq/">
+        <span class="app-name">Amplicon-seq</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/long-read-sequencing/">
+        <span class="app-name">Long-read sequencing</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/metagenomics/">
+        <span class="app-name">Metagenomics</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="apps-group" style="--g:#008187">
+    <div class="group-head">
+      <h2 class="group-name">Epigenomics &amp; PCR</h2>
+      <span class="group-line"></span>
+    </div>
+    <div class="apps-grid">
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/chip-seq/">
+        <span class="app-name">ChIP-seq</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-methylation/">
+        <span class="app-name">DNA Methylation</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/digital-pcr-app/">
+        <span class="app-name">Digital PCR</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/real-time-pcr/">
+        <span class="app-name">Real-Time PCR</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="apps-group" style="--g:#e35b27">
+    <div class="group-head">
+      <h2 class="group-name">Sample &amp; support services</h2>
+      <span class="group-line"></span>
+    </div>
+    <div class="apps-grid">
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-rna-extraction/">
+        <span class="app-name">DNA/RNA Extraction</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-rna-quality-and-quantity/">
+        <span class="app-name">DNA/RNA Quality and Quantity</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/sanger-sequencing/">
+        <span class="app-name">Sanger sequencing</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/cell-line-authentication/">
+        <span class="app-name">Cell-line authentication</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/user-prepared-library-sequencing/">
+        <span class="app-name">User-prepared library sequencing</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/bioinformatics/">
+        <span class="app-name">Bioinformatics</span><span class="app-go" aria-hidden="true">&rarr;</span>
+      </a>
+
+    </div>
+  </section>
+
+</div>

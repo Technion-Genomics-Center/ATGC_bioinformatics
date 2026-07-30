@@ -1,0 +1,169 @@
+/* ATGC Applications page.
+   Paste into: Appearance > Customize > Additional CSS
+   Everything is scoped to .atgc-apps and cannot affect other pages. */
+
+/* ATGC Applications, text only, grouped.
+   Scoped under .atgc-apps so nothing leaks into the theme. */
+.atgc-apps{
+  --ink:#262626;
+  --blue:#1da5ff;
+  --line:#e3ebf2;
+  --muted:#5f7488;
+  --sans:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --display:'Raleway','Roboto',sans-serif;
+  --radius:12px;
+
+  font-family:var(--sans);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+.atgc-apps *{box-sizing:border-box}
+
+/* ---- intro ---- */
+.atgc-apps .apps-intro{margin:0 0 30px}
+.atgc-apps .apps-intro p{
+  font-family:var(--sans);
+  font-size:20px;
+  line-height:29px;
+  color:var(--ink);
+  margin:0;
+  max-width:900px;
+}
+.atgc-apps .apps-rule{
+  height:5px;width:128px;border-radius:3px;margin:0 0 22px;
+  background:linear-gradient(90deg,#1da5ff,#fda13c 34%,#008187 67%,#e35b27);
+}
+.atgc-apps .apps-intro p.apps-note{
+  font-size:18px;
+  line-height:27px;
+  color:var(--muted);
+  margin:12px 0 0;
+}
+.atgc-apps .apps-note a{color:var(--blue);font-weight:600;text-decoration:none}
+.atgc-apps .apps-note a:hover{text-decoration:underline}
+
+/* ---- a group ---- */
+.atgc-apps .apps-group{margin:0 0 30px}
+.atgc-apps .group-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:0 0 13px;
+}
+.atgc-apps .group-name{
+  font-family:var(--display);
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--g);
+  margin:0;
+  padding:0;
+  border:0;
+  line-height:1.2;
+}
+.atgc-apps .group-line{
+  flex:1;
+  height:2px;
+  border-radius:2px;
+  background:var(--line);
+  background:color-mix(in srgb,var(--g) 28%,#ffffff);
+}
+
+/* every button in the section takes the section colour */
+.atgc-apps .apps-group .app-btn{--a:var(--g)}
+
+/* ---- the button grid ---- */
+.atgc-apps .apps-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:12px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+/* ---- one rectangular button ---- */
+.atgc-apps .app-btn{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:74px;
+  padding:14px 18px 14px 24px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  text-decoration:none;
+  color:var(--ink);
+  overflow:hidden;
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease;
+}
+
+/* the coloured stripe down the left edge */
+.atgc-apps .app-btn::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:6px;
+  background:var(--a);
+  transition:width .16s ease;
+}
+.atgc-apps .app-btn:hover::before,
+.atgc-apps .app-btn:focus-visible::before{width:10px}
+
+.atgc-apps .app-btn:hover,
+.atgc-apps .app-btn:focus-visible{
+  transform:translateY(-2px);
+  border-color:var(--a);
+  background:color-mix(in srgb,var(--a) 4%,#ffffff);
+  box-shadow:0 14px 30px -18px rgba(20,50,80,.55);
+  text-decoration:none;
+}
+.atgc-apps .app-btn:focus-visible{
+  outline:2px solid var(--a);
+  outline-offset:3px;
+}
+.atgc-apps .app-btn:hover .app-name{color:var(--a)}
+
+/* label */
+.atgc-apps .app-name{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:20px;
+  line-height:1.25;
+  color:var(--ink);
+  transition:color .16s ease;
+}
+
+/* arrow */
+.atgc-apps .app-go{
+  flex:0 0 auto;
+  font-family:var(--display);
+  font-size:20px;
+  line-height:1;
+  color:var(--a);
+  opacity:.35;
+  transform:translateX(-3px);
+  transition:opacity .16s ease,transform .16s ease;
+}
+.atgc-apps .app-btn:hover .app-go,
+.atgc-apps .app-btn:focus-visible .app-go{opacity:1;transform:translateX(0)}
+
+/* ---- responsive ---- */
+@media (max-width:520px){
+  .atgc-apps .apps-grid{grid-template-columns:1fr;gap:9px}
+  .atgc-apps .app-btn{min-height:64px;padding:12px 14px 12px 20px}
+  .atgc-apps .app-name{font-size:17px}
+  .atgc-apps .apps-intro p{font-size:18px;line-height:27px}
+  .atgc-apps .group-name{font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){
+  .atgc-apps .app-btn,
+  .atgc-apps .app-btn::before,
+  .atgc-apps .app-go,
+  .atgc-apps .app-name{transition:none}
+  .atgc-apps .app-btn:hover,
+  .atgc-apps .app-btn:focus-visible{transform:none}
+}

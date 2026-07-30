@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applications, single colour icons | ATGC</title>
+
+<!-- ================================================================
+     VERSION 3 of 3: icons recoloured to a single palette.
+
+     Yes, this is done entirely in CSS. The source PNGs are untouched;
+     a filter chain strips their colour and re-tints them to one hue:
+
+       grayscale(1)      flatten to greyscale
+       sepia(1)          push into a single warm hue (~35deg)
+       hue-rotate(Ndeg)  swing that hue round to the target
+       saturate(N)       restore intensity
+
+     Luminance is preserved, so internal detail in each icon survives.
+     Change --icon-hue and --icon-sat below to switch the whole set.
+
+     PASTE INTO WORDPRESS FROM HERE  vvv
+     ================================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700%7CRaleway:600,400&display=swap" rel="stylesheet">
+
+<style>
+/* ATGC Applications grid, single colour icon treatment.
+   Scoped under .atgc-apps so nothing leaks into the theme. */
+.atgc-apps{
+  --ink:#262626;
+  --a:#289ddf;            /* the one accent colour used throughout */
+  --line:#e3ebf2;
+  --panel:#f7fafd;
+  --muted:#5f7488;
+  --sans:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --display:'Raleway','Roboto',sans-serif;
+  --radius:14px;
+
+  /* ---- icon tint controls -------------------------------------
+     Presets, hue then saturation:
+       ATGC blue   #289ddf   167deg   3.6
+       Teal        #00a3b8   152deg   4.2
+       Purple      #7d5ba6   232deg   2.2
+       Neutral grey          0deg     0     (greyscale only)
+     ------------------------------------------------------------- */
+  --icon-hue:167deg;
+  --icon-sat:3.6;
+
+  font-family:var(--sans);
+  color:var(--ink);
+  max-width:1290px;
+  margin:0 auto;
+  -webkit-font-smoothing:antialiased;
+}
+.atgc-apps *{box-sizing:border-box}
+
+/* ---- intro ---- */
+.atgc-apps .apps-intro{margin:0 0 26px}
+.atgc-apps .apps-intro p{
+  font-family:var(--sans);
+  font-size:20px;
+  line-height:29px;
+  color:var(--ink);
+  margin:0;
+  max-width:900px;
+}
+.atgc-apps .apps-rule{
+  height:5px;width:128px;border-radius:3px;margin:0 0 22px;
+  background:linear-gradient(90deg,#e73334,#fbac45 34%,#289ddf 67%,#e82281);
+}
+.atgc-apps .apps-intro p.apps-note{
+  font-size:18px;
+  line-height:27px;
+  color:var(--muted);
+  margin:12px 0 0;
+}
+.atgc-apps .apps-note a{color:var(--a);font-weight:600;text-decoration:none}
+.atgc-apps .apps-note a:hover{text-decoration:underline}
+
+/* ---- the button grid ---- */
+.atgc-apps .apps-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:14px;
+  margin:0 0 30px;
+  padding:0;
+  list-style:none;
+}
+
+/* ---- one rectangular button ---- */
+.atgc-apps .app-btn{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  min-height:96px;
+  padding:14px 18px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  text-decoration:none;
+  color:var(--ink);
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.atgc-apps .app-btn:hover,
+.atgc-apps .app-btn:focus-visible{
+  transform:translateY(-2px);
+  border-color:var(--a);
+  box-shadow:0 14px 30px -18px rgba(20,50,80,.55);
+  text-decoration:none;
+}
+.atgc-apps .app-btn:focus-visible{
+  outline:2px solid var(--a);
+  outline-offset:3px;
+}
+.atgc-apps .app-btn:hover .app-name{color:var(--a)}
+
+/* icon plate */
+.atgc-apps .app-ic{
+  flex:0 0 auto;
+  width:68px;height:68px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:12px;
+  background:var(--panel);
+  background:color-mix(in srgb,var(--a) 9%,#ffffff);
+  transition:background .16s ease;
+}
+.atgc-apps .app-btn:hover .app-ic{
+  background:color-mix(in srgb,var(--a) 16%,#ffffff);
+}
+
+/* THE RECOLOURING. Every icon collapses to one hue. */
+.atgc-apps .app-ic img{
+  width:48px;height:48px;
+  display:block;
+  object-fit:contain;
+  filter:grayscale(1) sepia(1) hue-rotate(var(--icon-hue)) saturate(var(--icon-sat));
+}
+
+/* Flat silhouette alternative. Uncomment to use the PNG alpha channel as a
+   mask and paint it in one solid colour instead. Sharper and perfectly
+   uniform, but internal detail inside each icon is lost.
+
+.atgc-apps .app-ic img{
+  filter:none;
+  background:var(--a);
+  -webkit-mask:var(--m) center/contain no-repeat;
+          mask:var(--m) center/contain no-repeat;
+}
+   ...and add style="--m:url(assets/apps/rna-seq.png)" to each <img>.
+*/
+
+/* label */
+.atgc-apps .app-name{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:20px;
+  line-height:1.25;
+  color:var(--ink);
+  transition:color .16s ease;
+}
+
+/* ---- credit ---- */
+.atgc-apps .apps-credit{
+  font-size:12px;
+  line-height:1.5;
+  color:#93a4b5;
+  border-top:1px solid var(--line);
+  padding-top:14px;
+  margin:0;
+}
+.atgc-apps .apps-credit a{color:#93a4b5;text-decoration:underline}
+
+/* ---- responsive ---- */
+@media (max-width:520px){
+  .atgc-apps .apps-grid{grid-template-columns:1fr;gap:10px}
+  .atgc-apps .app-btn{min-height:84px;padding:12px 14px;gap:13px}
+  .atgc-apps .app-ic{width:58px;height:58px;border-radius:11px}
+  .atgc-apps .app-ic img{width:42px;height:42px}
+  .atgc-apps .app-name{font-size:17px}
+  .atgc-apps .apps-intro p{font-size:18px;line-height:27px}
+}
+@media (prefers-reduced-motion:reduce){
+  .atgc-apps .app-btn,
+  .atgc-apps .app-ic,
+  .atgc-apps .app-name{transition:none}
+  .atgc-apps .app-btn:hover,
+  .atgc-apps .app-btn:focus-visible{transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="atgc-apps">
+
+  <div class="apps-intro">
+    <div class="apps-rule"></div>
+    <p>The Azrieli Technion Genomics Center supports a broad range of genomic
+       applications, from sample QC through sequencing to full bioinformatics
+       analysis. Select an application to see what we offer.</p>
+    <p class="apps-note">
+      Planning an experiment that doesn't appear here?
+      <a href="https://atgc.net.technion.ac.il/contact/">Contact us</a> and we are happy to help you design it.
+    </p>
+  </div>
+
+  <div class="apps-grid">
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/single-cell-transcriptomics/">
+      <span class="app-ic"><img src="assets/apps/single-cell-transcriptomics.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Single Cell Transcriptomics</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/spatial-transcriptomics/">
+      <span class="app-ic"><img src="assets/apps/spatial-transcriptomics.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Spatial Transcriptomics</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/rna-seq/">
+      <span class="app-ic"><img src="assets/apps/rna-seq.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">RNA-seq</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-seq/">
+      <span class="app-ic"><img src="assets/apps/dna-seq.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">DNA-seq</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/amplicon-seq/">
+      <span class="app-ic"><img src="assets/apps/amplicon-seq.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Amplicon-seq</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/chip-seq/">
+      <span class="app-ic"><img src="assets/apps/chip-seq.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">ChIP-seq</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/metagenomics/">
+      <span class="app-ic"><img src="assets/apps/metagenomics.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Metagenomics</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/mirna-seq/">
+      <span class="app-ic"><img src="assets/apps/mirna-seq.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">miRNA-seq</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/exome-seq/">
+      <span class="app-ic"><img src="assets/apps/exome-seq.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Exome-seq</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/long-read-sequencing/">
+      <span class="app-ic"><img src="assets/apps/long-read-sequencing.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Long-read sequencing</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-methylation/">
+      <span class="app-ic"><img src="assets/apps/dna-methylation.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">DNA Methylation</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/digital-pcr-app/">
+      <span class="app-ic"><img src="assets/apps/digital-pcr.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Digital PCR</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/real-time-pcr/">
+      <span class="app-ic"><img src="assets/apps/real-time-pcr.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Real-Time PCR</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/cell-line-authentication/">
+      <span class="app-ic"><img src="assets/apps/cell-line-authentication.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Cell-line authentication</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/sanger-sequencing/">
+      <span class="app-ic"><img src="assets/apps/sanger-sequencing.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Sanger sequencing</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-rna-extraction/">
+      <span class="app-ic"><img src="assets/apps/dna-rna-extraction.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">DNA/RNA Extraction</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/dna-rna-quality-and-quantity/">
+      <span class="app-ic"><img src="assets/apps/dna-rna-quality-and-quantity.png" alt="" width="256" height="256" loading="lazy" decoding="async"></span>
+      <span class="app-name">DNA/RNA Quality and Quantity</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/user-prepared-library-sequencing/">
+      <span class="app-ic"><img src="assets/apps/user-prepared-library-sequencing.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">User-prepared library sequencing</span>
+    </a>
+
+    <a class="app-btn" href="https://atgc.net.technion.ac.il/applications/bioinformatics/">
+      <span class="app-ic"><img src="assets/apps/bioinformatics.png" alt="" width="512" height="512" loading="lazy" decoding="async"></span>
+      <span class="app-name">Bioinformatics</span>
+    </a>
+
+  </div>
+
+  <p class="apps-credit">
+    Icons by <a href="https://www.flaticon.com/free-icons/chemistry" title="chemistry icons">smashingstocks, Flaticon</a>.
+  </p>
+
+</div>
+
+<!-- ================================================================
+     PASTE INTO WORDPRESS TO HERE  ^^^
+     ================================================================ -->
+
+</body>
+</html>

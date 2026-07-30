@@ -35,3 +35,6 @@ _*.txt
 _*.png
 _*.webp
 _*.svg
+
+# Application-section source icons (web copies live in assets/apps/)
+aplication section/
