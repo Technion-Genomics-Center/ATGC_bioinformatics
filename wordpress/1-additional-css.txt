@@ -73,6 +73,19 @@
 /* every button in the section takes the section colour */
 .atgc-apps .apps-group .app-btn{--a:var(--g)}
 
+/* ---- a sub-group inside a section ---- */
+.atgc-apps .apps-sub{margin:0 0 16px}
+.atgc-apps .apps-sub:last-child{margin-bottom:0}
+.atgc-apps .sub-name{
+  font-family:var(--display);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 8px;
+}
+
 /* ---- the button grid ---- */
 .atgc-apps .apps-grid{
   display:grid;
