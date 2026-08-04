@@ -360,7 +360,8 @@ function renderLanding(body){
      <section class="svc-group" style="--g:#008187">
        <div class="group-head"><h2 class="group-name">Epigenomics</h2><span class="group-line"></span></div>
        <div class="svc-grid">
-         <button class="svc-btn" onclick="selectById('chip')"><span class="svc-name">ChIP-seq &amp; CUT&amp;RUN</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
+         <button class="svc-btn" onclick="selectById('chip')"><span class="svc-name">ChIP-seq</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
+         <button class="svc-btn" onclick="selectById('chip')"><span class="svc-name">CUT&amp;RUN</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
          <button class="svc-btn" onclick="selectById('methyl')"><span class="svc-name">DNA Methylation</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
        </div>
      </section>
@@ -3940,16 +3941,8 @@ function renderChromatin(body){
    <div class="grid2">
      <div>
        <div class="panel"><p class="panel-title">ChIP-seq · coverage track</p>
-         <p class="panel-sub">Read-density tracks at the <i>Cdkn1a</i> locus with MACS2 peak calls and gene model (IGV), H3K27ac against input.</p>
-         <div class="fig"><img src="assets/chip-track.png" alt="ChIP-seq read-density tracks at the Cdkn1a locus with MACS2 peak calls (IGV)" style="width:100%;display:block;border-radius:8px;border:1px solid var(--line)"></div>
-       </div>
-       <div class="panel" style="margin-top:20px"><p class="panel-title">CUT&amp;RUN · target vs IgG</p>
-         <p class="panel-sub">Spike-in normalised coverage with SEACR peak calls. CUT&amp;RUN background is very low, so peaks stand out against a near-flat IgG control.</p>
+         <p class="panel-sub">Spike-in normalised coverage against the control, with peak calls. Hover a peak for its fold enrichment.</p>
          <div class="fig"><svg id="crTrack" viewBox="0 0 560 262" style="width:100%;height:auto;display:block"></svg></div>
-       </div>
-       <div class="panel" style="margin-top:20px"><p class="panel-title">Fragment-size distribution</p>
-         <p class="panel-sub">Paired-end insert sizes. Targeted digestion releases short sub-nucleosomal fragments near 120 bp, with a nucleosomal shoulder near 180 bp.</p>
-         <div class="fig"><svg id="crFrag" viewBox="0 0 560 220" style="width:100%;height:auto;display:block"></svg></div>
        </div>
      </div>
      <div>
@@ -3996,7 +3989,7 @@ function renderChromatin(body){
     [110,180].forEach(y=>svg.appendChild(E('line',{x1:L,x2:R,y1:y,y2:y,stroke:LN,'stroke-width':1})));
 
     txt(svg,8,36,'target',{fill:BL,'font-weight':600});
-    txt(svg,8,150,'IgG');
+    txt(svg,8,150,'control');
     txt(svg,L,26,'0 – 45 RPGC (spike-in normalised)',{fill:MU});
 
     // SEACR peak calls
@@ -4020,37 +4013,6 @@ function renderChromatin(body){
     txt(svg,R,252,'24,246,000',{'text-anchor':'end'});
   })();
 
-  /* ---------- fragment-size distribution ---------- */
-  (function(){
-    const svg=document.getElementById('crFrag'); if(!svg) return;
-    const L=52,R=548,B=172,T=26, HH=B-T;
-    const g=(x,mu,sd)=>Math.exp(-((x-mu)*(x-mu))/(2*sd*sd));
-    const tgt=x=>0.98*g(x,122,22)+0.42*g(x,186,30)+0.13*g(x,352,46);
-    const ctl=x=>0.34*g(x,168,54)+0.20*g(x,300,90);
-    const X=bp=>L+(R-L)*bp/500;
-    const path=f=>{let d='M'+L+','+B;
-      for(let bp=0;bp<=500;bp+=2) d+='L'+X(bp).toFixed(1)+','+(B-f(bp)*HH*0.92).toFixed(1);
-      return d+'L'+R+','+B+'Z';};
-
-    [0,100,200,300,400,500].forEach(bp=>{
-      svg.appendChild(E('line',{x1:X(bp),x2:X(bp),y1:T,y2:B,stroke:LN,'stroke-width':1}));
-      txt(svg,X(bp),190,bp,{'text-anchor':'middle'});
-    });
-    svg.appendChild(E('line',{x1:L,x2:R,y1:B,y2:B,stroke:LN,'stroke-width':1.2}));
-
-    svg.appendChild(E('path',{d:path(ctl),fill:MU,'fill-opacity':.22,stroke:MU,'stroke-width':1.2}));
-    svg.appendChild(E('path',{d:path(tgt),fill:BL,'fill-opacity':.20,stroke:BL,'stroke-width':1.6}));
-
-    // call out the two diagnostic modes
-    [[122,'sub-nucleosomal'],[186,'nucleosomal']].forEach((m,i)=>{
-      svg.appendChild(E('line',{x1:X(m[0]),x2:X(m[0]),y1:B-tgt(m[0])*HH*0.92-6,y2:T+4+i*14,stroke:BL,'stroke-width':1,'stroke-dasharray':'3 3','stroke-opacity':.7}));
-      txt(svg,X(m[0])+6,T+8+i*14,m[0]+' bp · '+m[1],{fill:BL});
-    });
-    txt(svg,X(250),208,'insert size (bp)',{'text-anchor':'middle',fill:MD});
-
-    svg.appendChild(E('rect',{x:L,y:T-14,width:9,height:9,rx:2,fill:BL}));      txt(svg,L+14,T-6,'target');
-    svg.appendChild(E('rect',{x:L+70,y:T-14,width:9,height:9,rx:2,fill:MU}));   txt(svg,L+84,T-6,'IgG');
-  })();
 
   /* ---------- average profile + per-peak heatmap ---------- */
   (function(){
