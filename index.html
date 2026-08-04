@@ -467,7 +467,132 @@ function renderRNAseq(body){
         </div>
       </div>
    </div>
+   <div class="panel" style="margin-top:16px">
+     <p class="panel-title">Gene-level expression &middot; violin + box</p>
+     <p class="panel-sub">Per-sample normalised counts for the selected gene, split by condition.</p>
+     <div style="max-width:270px;margin-bottom:13px"><label style="font-size:12px;color:var(--muted);margin-bottom:5px;font-family:var(--mono);display:block">gene</label><select id="gvpick"></select></div>
+     <div class="fig" id="gviol"></div>
+   </div>
+   <div class="panel" style="margin-top:16px">
+     <p class="panel-title">Custom heatmap</p>
+     <p class="panel-sub">Supply a gene list and the heatmap is built from it. Colour is the row z-score across all samples.</p>
+     <div style="margin-bottom:13px"><label style="font-size:12px;color:var(--muted);margin-bottom:5px;font-family:var(--mono);display:block">gene list (comma or space separated, up to 20)</label><input type="text" id="hmin" value="TP53, MYC, EGFR, BRCA1, KRAS, PTEN, VEGFA, CDKN2A, IL6, TNF, STAT3, BCL2" style="width:100%;background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-family:var(--mono);font-size:12px;color:var(--ink)"></div>
+     <div class="fig" id="ghm"></div>
+   </div>
    <p class="note">In the delivered report this is one linked widget — the volcano exports to SVG/PNG, opens fullscreen, and the GSEA tables span multiple MSigDB collections.</p>`;
+
+  /* ---- gene-level violin/box, and a heatmap built from a user-supplied list.
+         Per-sample values are derived from each gene's own DE result, so these
+         panels agree with the volcano instead of inventing a second truth. ---- */
+  const byGene=new Map(); data.forEach(d=>{if(!byGene.has(d.g))byGene.set(d.g,d);});
+  const NSAMP=18;
+  const qtile=(a,q)=>{const v=a.slice().sort((x,y)=>x-y);const i=(v.length-1)*q,lo=Math.floor(i),hi=Math.ceil(i);
+    return lo===hi?v[lo]:v[lo]+(v[hi]-v[lo])*(i-lo);};
+  function exprFor(name){
+    const d=byGene.get(name); if(!d) return null;
+    let seed=0; for(let i=0;i<name.length;i++) seed=(seed*31+name.charCodeAt(i))>>>0;
+    const r=mulberry32(seed||7), base=6.2+r()*2.8, sd=0.38+r()*0.30, A=[],B=[];
+    for(let i=0;i<NSAMP;i++){A.push(base+gauss(r)*sd);B.push(base+d.lfc+gauss(r)*sd);}
+    return {A:A,B:B,lfc:d.lfc,nlp:d.nlp};
+  }
+  const zcol=z=>{const t=Math.max(-2,Math.min(2,z))/2, e=Math.abs(t);
+    return t>=0 ? 'rgb('+Math.round(255-24*e)+','+Math.round(255-204*e)+','+Math.round(255-203*e)+')'
+                : 'rgb('+Math.round(255-215*e)+','+Math.round(255-98*e)+','+Math.round(255-31*e)+')';};
+
+  function vioBox(svg,cx,halfw,vals,color,Y){
+    const lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
+    const n=30, bw=(hi-lo)/6+1e-6, grid=[];
+    for(let i=0;i<=n;i++){const y=lo-0.3+(hi-lo+0.6)*i/n;let d=0;
+      for(let k=0;k<vals.length;k++){const u=y-vals[k];d+=Math.exp(-(u*u)/(2*bw*bw));}
+      grid.push([y,d]);}
+    let mx=0; grid.forEach(g=>{if(g[1]>mx)mx=g[1];}); mx=mx||1;
+    let path='';
+    grid.forEach((g,i)=>{const w=g[1]/mx*halfw;path+=(i?'L':'M')+(cx+w).toFixed(1)+','+Y(g[0]).toFixed(1);});
+    for(let i=grid.length-1;i>=0;i--){const w=grid[i][1]/mx*halfw;path+='L'+(cx-w).toFixed(1)+','+Y(grid[i][0]).toFixed(1);}
+    svg.appendChild(E('path',{d:path+'Z',fill:color,'fill-opacity':.15,stroke:color,'stroke-width':1.1}));
+    const q1=qtile(vals,.25), md=qtile(vals,.5), q3=qtile(vals,.75);
+    svg.appendChild(E('line',{x1:cx,x2:cx,y1:Y(lo),y2:Y(hi),stroke:color,'stroke-width':1}));
+    svg.appendChild(E('rect',{x:cx-halfw*.30,y:Y(q3),width:halfw*.60,height:Math.max(1,Y(q1)-Y(q3)),rx:2,
+      fill:'#fff',stroke:color,'stroke-width':1.2}));
+    svg.appendChild(E('line',{x1:cx-halfw*.30,x2:cx+halfw*.30,y1:Y(md),y2:Y(md),stroke:color,'stroke-width':1.9}));
+    const r=mulberry32(Math.round(md*10007)+vals.length);
+    vals.forEach(v=>svg.appendChild(E('circle',{cx:(cx+(r()-.5)*halfw*.7).toFixed(1),cy:Y(v).toFixed(1),
+      r:1.7,fill:color,'fill-opacity':.5})));
+  }
+
+  function drawViolins(){
+    const host=document.getElementById('gviol'); if(!host) return; host.innerHTML='';
+    const pick=document.getElementById('gvpick');
+    const name=(pick&&pick.value)||'TP53';
+    const e=exprFor(name);
+    if(!e){host.innerHTML='<div style="padding:22px;color:var(--muted2);font-size:13px;font-family:var(--sans)">No data for that gene.</div>';return;}
+    const VW=560,VH=300,vm={l:54,r:16,t:38,b:52};
+    const svg=E('svg',{viewBox:'0 0 '+VW+' '+VH,style:'width:100%;height:auto;display:block'});host.appendChild(svg);
+    let lo=Infinity,hi=-Infinity;
+    e.A.concat(e.B).forEach(v=>{if(v<lo)lo=v;if(v>hi)hi=v;});
+    lo-=.6;hi+=.6;
+    const Y=v=>VH-vm.b-(v-lo)/(hi-lo)*(VH-vm.t-vm.b);
+    for(let g=Math.ceil(lo);g<=hi;g++){
+      svg.appendChild(E('line',{x1:vm.l,x2:VW-vm.r,y1:Y(g),y2:Y(g),stroke:CSSv('--line'),'stroke-width':1}));
+      const t=E('text',{x:vm.l-8,y:Y(g)+3,'text-anchor':'end','font-size':10,'font-family':'IBM Plex Mono, monospace',fill:CSSv('--muted2')});
+      t.textContent=g;svg.appendChild(t);}
+    svg.appendChild(E('line',{x1:vm.l,x2:VW-vm.r,y1:VH-vm.b,y2:VH-vm.b,stroke:CSSv('--line'),'stroke-width':1.2}));
+
+    const span=VW-vm.l-vm.r, halfw=span*0.15;
+    const groups=[[e.A,CSSv('--blue'),'control',0.28],[e.B,CSSv('--red'),'treated',0.72]];
+    groups.forEach(g=>{
+      const cx=vm.l+span*g[3];
+      vioBox(svg,cx,halfw,g[0],g[1],Y);
+      const t=E('text',{x:cx,y:VH-vm.b+22,'text-anchor':'middle','font-size':12.5,'font-family':'IBM Plex Mono, monospace',fill:g[1]});
+      t.textContent=g[2];svg.appendChild(t);
+      const n=E('text',{x:cx,y:VH-vm.b+36,'text-anchor':'middle','font-size':9.5,'font-family':'IBM Plex Mono, monospace',fill:CSSv('--muted2')});
+      n.textContent='n = '+g[0].length;svg.appendChild(n);
+    });
+
+    const h=E('text',{x:vm.l,y:16,'font-size':13,'font-family':'IBM Plex Mono, monospace',fill:CSSv('--ink'),'font-weight':600});
+    h.textContent=name;svg.appendChild(h);
+    const st=E('text',{x:vm.l,y:30,'font-size':10,'font-family':'IBM Plex Mono, monospace',fill:CSSv('--muted2')});
+    st.textContent='log2FC '+e.lfc.toFixed(2)+' · p.adj '+Math.pow(10,-e.nlp).toExponential(1);
+    svg.appendChild(st);
+    const yl=E('text',{x:14,y:(vm.t+VH-vm.b)/2,'text-anchor':'middle','font-size':10,'font-family':'IBM Plex Mono, monospace',
+      fill:CSSv('--muted'),transform:'rotate(-90 14 '+((vm.t+VH-vm.b)/2)+')'});
+    yl.textContent='normalised expression (log2)';svg.appendChild(yl);
+  }
+
+  function drawHeat(){
+    const host=document.getElementById('ghm'); if(!host) return; host.innerHTML='';
+    const names=(document.getElementById('hmin').value||'').split(/[,\s]+/)
+      .map(x=>x.trim().toUpperCase()).filter(Boolean).slice(0,20);
+    const rows=names.map(n=>({n:n,e:exprFor(n)})).filter(x=>x.e);
+    if(!rows.length){host.innerHTML='<div style="padding:22px;color:var(--muted2);font-size:13px;font-family:var(--sans)">No matching genes in this dataset.</div>';return;}
+    const NC=NSAMP*2, CW=11.6, CH=17, HL=104, HT=32, HW=HL+NC*CW+16, HH=HT+rows.length*CH+34;
+    const svg=E('svg',{viewBox:'0 0 '+HW.toFixed(0)+' '+HH,style:'width:100%;height:auto;display:block'});host.appendChild(svg);
+    rows.forEach((row,ri)=>{
+      const v=row.e.A.concat(row.e.B);
+      const mu=v.reduce((a,b)=>a+b,0)/v.length;
+      const sd=Math.sqrt(v.reduce((a,b)=>a+(b-mu)*(b-mu),0)/v.length)||1;
+      v.forEach((x,ci)=>svg.appendChild(E('rect',{x:(HL+ci*CW).toFixed(1),y:HT+ri*CH,
+        width:(CW-.6).toFixed(1),height:CH-1.6,fill:zcol((x-mu)/sd)})));
+      const t=E('text',{x:HL-9,y:HT+ri*CH+CH/2+3,'text-anchor':'end','font-size':10,'font-family':'IBM Plex Mono, monospace',fill:CSSv('--ink')});
+      t.textContent=row.n;svg.appendChild(t);
+    });
+    svg.appendChild(E('rect',{x:HL,y:HT-12,width:NSAMP*CW,height:6,rx:2,fill:CSSv('--blue')}));
+    svg.appendChild(E('rect',{x:HL+NSAMP*CW,y:HT-12,width:NSAMP*CW,height:6,rx:2,fill:CSSv('--red')}));
+    [[NSAMP*CW/2,'control',CSSv('--blue')],[NSAMP*CW*1.5,'treated',CSSv('--red')]].forEach(g=>{
+      const t=E('text',{x:HL+g[0],y:HT-17,'text-anchor':'middle','font-size':10,'font-family':'IBM Plex Mono, monospace',fill:g[2]});
+      t.textContent=g[1];svg.appendChild(t);});
+    const f=E('text',{x:HL,y:HH-11,'font-size':9.5,'font-family':'IBM Plex Mono, monospace',fill:CSSv('--muted2')});
+    f.textContent='row z-score · '+rows.length+' genes × '+NC+' samples';svg.appendChild(f);
+  }
+
+  (function(){
+    const pick=document.getElementById('gvpick'), hm=document.getElementById('hmin');
+    if(pick){GENES.slice().sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;pick.appendChild(o);});
+      pick.value='TP53';
+      pick.addEventListener('change',drawViolins);}
+    if(hm) hm.addEventListener('input',drawHeat);
+    drawViolins(); drawHeat();
+  })();
 
   const W=560,H=400,m={l:50,r:14,t:14,b:46};
   const svg=E('svg',{viewBox:`0 0 ${W} ${H}`});document.getElementById('volc').appendChild(svg);
