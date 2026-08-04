@@ -6,14 +6,14 @@
 <title>Bioinformatics — ATGC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Raleway:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#ffffff;
     --panel:#f7fafd;
     --panel2:#eef3f8;
     --line:#e3ebf2;
-    --ink:#21323f;
+    --ink:#262626;
     --muted:#5f7488;
     --muted2:#93a4b5;
     --blue:#289de0;
@@ -28,8 +28,8 @@
     --ns:#bcc8d2;
     --radius:14px;
     --mono:'IBM Plex Mono',ui-monospace,monospace;
-    --sans:'Source Sans 3',system-ui,sans-serif;
-    --display:'Poppins','Source Sans 3',system-ui,sans-serif;
+    --sans:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --display:'Raleway','Roboto',sans-serif;
   }
   *{box-sizing:border-box}
   .atgc-bio{
@@ -116,8 +116,14 @@
   .lg.off{opacity:.4;text-decoration:line-through}
   .lg .sw{width:11px;height:11px;border-radius:3px}
 
+  .ero{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 18px;margin-bottom:18px}
+  .ero-h{font-family:var(--display);font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 9px;font-weight:600}
+  .ero-main{font-size:14.5px;color:var(--ink);margin:0 0 9px;line-height:1.6}
+  .ero ul{margin:0;padding-left:19px}
+  .ero li{font-size:13.5px;color:var(--muted);line-height:1.62;margin:3px 0}
+  .ero li b,.ero-main b{color:var(--ink);font-weight:600}
   .note{font-size:12px;color:var(--muted2);margin-top:14px;line-height:1.6}
-  .ftr{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:18px 0 6px;color:var(--muted2);font-size:13px;border-top:1px solid var(--line);margin-top:8px}
+  .ftr{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:flex-end;padding:18px 0 6px;color:var(--muted2);font-size:13px;border-top:1px solid var(--line);margin-top:8px}
   .atgc-bio .cta{display:inline-block;text-decoration:none;text-align:center;background:linear-gradient(135deg,var(--blue),#1c8bca);color:#fff;font-weight:600;padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;border:0;font-family:var(--sans);box-shadow:0 8px 20px -10px rgba(40,157,224,.7)}
   .atgc-bio a.cta,.atgc-bio a.cta:hover,.atgc-bio a.cta:visited{color:#fff}
   .colorbar{height:9px;border-radius:5px;background:linear-gradient(90deg,#eef5fb,#9fd0ee,#289de0,#fbac45,#e73334);margin-top:6px;border:1px solid var(--line)}
@@ -145,14 +151,14 @@
 .backlink:hover{border-color:#9fd0ee;color:var(--ink);transform:translateY(-1px);box-shadow:0 6px 16px -10px rgba(40,157,224,.5)}
 .backlink[hidden]{display:none}
 .land-intro{padding:2px 0 26px}
-.land-intro h1.hero-title{font-family:var(--display);color:#1b2a36;font-size:clamp(30px,4.4vw,46px);font-weight:700;letter-spacing:-.5px;line-height:1.04;margin:0;max-width:820px}
-.land-intro .land-lede{color:var(--muted);font-size:16px;line-height:1.62;margin:0 0 13px;max-width:none}
+.land-intro h1.hero-title{font-family:var(--display);color:#000;font-size:30px;font-weight:600;line-height:42px;margin:0;max-width:none}
+.land-intro .land-lede{color:var(--ink);font-size:20px;line-height:29px;margin:0 0 16px;max-width:none}
 .land-intro .land-lede:last-of-type{margin-bottom:0}
-.land-outro{margin-top:6px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:15px;line-height:1.62}
+.land-outro{margin-top:6px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink);font-size:20px;line-height:29px}
 .land-outro a{color:var(--blue);font-weight:600}
 .svc-group{margin:0 0 26px}
 .group-head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
-.group-name{font-family:var(--display);font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin:0;line-height:1.2}
+.group-name{font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin:0;line-height:1.2}
 .group-line{flex:1;height:2px;border-radius:2px;background:color-mix(in srgb,var(--g) 28%,#ffffff)}
 .svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
 .svc-btn{--a:var(--g);position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:74px;padding:14px 18px 14px 24px;background:#fff;border:1px solid var(--line);border-radius:12px;cursor:pointer;font-family:inherit;text-align:left;overflow:hidden;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
@@ -160,7 +166,7 @@
 .svc-btn:hover::before,.svc-btn:focus-visible::before{width:10px}
 .svc-btn:hover,.svc-btn:focus-visible{transform:translateY(-2px);border-color:var(--a);background:color-mix(in srgb,var(--a) 4%,#ffffff);box-shadow:0 14px 30px -18px rgba(20,50,80,.55)}
 .svc-btn:focus-visible{outline:2px solid var(--a);outline-offset:3px}
-.svc-name{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.25;color:#1b2a36;transition:color .16s ease}
+.svc-name{font-family:var(--display);font-weight:600;font-size:20px;line-height:1.25;color:var(--ink);transition:color .16s ease}
 .svc-btn:hover .svc-name{color:var(--a)}
 .svc-go{flex:0 0 auto;font-size:19px;line-height:1;color:var(--a);opacity:.35;transform:translateX(-3px);transition:opacity .16s ease,transform .16s ease}
 .svc-btn:hover .svc-go,.svc-btn:focus-visible .svc-go{opacity:1;transform:translateX(0)}
@@ -234,7 +240,6 @@
   </div>
 
   <div class="ftr">
-    <div>Figures use <b style="color:#b06a12">synthetic data</b> for illustration. Your real reports are delivered as interactive HTML plus the underlying data objects.</div>
     <a class="cta" href="https://atgc.net.technion.ac.il/contact-us/">Request a consultation →</a>
   </div>
 </div>
@@ -304,6 +309,23 @@ const SERVICES=[
    tag:"CRISPR · amplicon<br>project-specific",render:renderCustom},
 ];
 
+/* Expected result output, per service. The first five are taken verbatim from the
+   matching service pages on atgc.net. The rest have no such section on the site
+   and are written from each report's own tools and figures. */
+const OUTPUTS={
+  rnaseq:{m:"<b>Main results file.</b> A .csv file with gene expression data, including counts, fold change and adjusted p-value.",i:["<b>Volcano plot.</b> For visualizing differential expression.","<b>Heatmap.</b> For visualizing gene expression across samples.","<b>PCA plot.</b> To assess sample similarity and detect potential outliers.","<b>Coverage plot.</b> To check read coverage across genes or the entire transcriptome using a genome browser such as IGV.","<b>GSEA results.</b> Ranked pathway table with enrichment scores and adjusted p-values."]},
+  scrna:{m:"<b>Main results file.</b> An .html file summarizing the analysis results, including UMAP, clustering and marker expression dot plots.",i:["<b>Seurat object</b> in RDS format, consisting of expression values for each gene across all cells.","<b>Cell Ranger count outputs</b> (web summary and filtered_feature_bc_matrix).","<b>A .cloupe file</b> for results viewing and further analysis using 10x Genomics Loupe Browser.","Additional analysis results and plots can be generated upon request."]},
+  variant:{m:"<b>Main results file.</b> A .vcf file containing all identified variants with details such as genotype, reference allele and variant allele.",i:["<b>SNP / indel list.</b> A detailed list of variants along with their annotations, including functional predictions.","<b>IGV browser view.</b> A snapshot of the alignment and variants across specific regions."]},
+  chip:{m:"<b>Main results file.</b> A .bed or .narrowPeak file containing the identified peaks and their genomic coordinates.",i:["<b>Differential peak analysis</b> (optional). Peaks showing significant differences between conditions, with fold change and p-value.","<b>Heatmap.</b> Peak binding at transcription start site regions.","<b>Genomic annotation pie chart.</b> Distribution of statistically enriched regions across the genome.","<b>PCA plot.</b> To check variability between samples and detect potential outliers.","<b>IGV view.</b> A snapshot showing binding regions or peak enrichment across the genome.","For CUT&amp;RUN, peaks are additionally called with SEACR on the spike-in normalised bedGraph."]},
+  meta16s:{m:"<b>Main results file.</b> A .csv file with taxonomic abundances at different levels, for example genus and species.",i:["<b>Bar chart.</b> Microbial abundance at different taxonomic levels.","<b>Alpha / beta diversity plots.</b> To assess diversity within and between samples."]},
+  visiumhd:{m:"<b>Main results file.</b> A Space Ranger output bundle with the filtered feature-barcode matrix, tissue image and spatial coordinates.",i:["<b>Seurat object</b> in RDS format, with binned expression and spatial coordinates.","<b>A .cloupe file</b> for panning, zooming and overlaying any gene on the tissue in Loupe Browser.","<b>Cluster and marker tables.</b> Graph-based clusters with per-cluster marker genes.","<b>Spatial feature plots.</b> Selected genes mapped onto the tissue image."]},
+  cosmx:{m:"<b>Main results file.</b> An AtoMx export with the single-cell expression matrix, cell metadata and segmentation polygons.",i:["<b>Seurat object</b> in RDS format, with per-cell counts, spatial coordinates and cell-type calls.","<b>Cell typing table.</b> Assigned cell types with the marker support behind each cluster.","<b>Niche and neighbourhood analysis.</b> Spatial domains and cell-to-cell proximity summaries.","<b>Multiplexed images.</b> Marker channel overlays for the imaged tissue."]},
+  methyl:{m:"<b>Main results file.</b> A .csv file of per-cytosine methylation calls with coverage and methylation percentage.",i:["<b>DMC / DMR table.</b> Differentially methylated cytosines and regions with methylation difference and adjusted p-value.","<b>Genomic context annotation.</b> Regions annotated to promoters, gene bodies, CpG islands and shores.","<b>Heatmap and violin plots.</b> Per-sample methylation across the top differential regions.","<b>Bismark coverage files</b> loadable in a genome browser."]},
+  assembly:{m:"<b>Main results file.</b> A polished assembly in FASTA format with per-contig statistics.",i:["<b>Assembly summary.</b> Contig count, total length, N50, L50, GC content and mean coverage (QUAST).","<b>BUSCO completeness report.</b> Complete, fragmented and missing single-copy orthologues.","<b>Coverage tracks.</b> Read depth across each contig, loadable in IGV.","<b>Variant annotation table</b> (optional). snpEff effects and classes where a reference is available."]},
+  olink:{m:"<b>Main results file.</b> A normalised NPX matrix in .csv format, one row per sample and one column per protein assay.",i:["<b>Sample and assay QC report.</b> Per-sample NPX deviation, control performance and QC flags.","<b>Differential abundance table.</b> NPX log2 fold change with adjusted p-value for every protein.","<b>Volcano and PCA plots.</b> Group separation and the proteins driving it.","<b>Pathway enrichment</b> run with the panel itself as the background set."]},
+  custom:{m:"<b>Deliverables</b> are agreed with you at project start, and typically pair a results table with the figures needed to interpret it.",i:["<b>Editing efficiency and indel spectra</b> per amplicon (CRISPResso2).","<b>Knock-in / HDR quantification</b> where the design calls for it.","<b>Per-sample summary table</b> with read counts and filtering statistics.","<b>Analysis code and a written methods section</b> so the work can be reproduced and cited."]}
+};
+
 function select(s){
   const head=document.getElementById('r-head');
   const bl=document.getElementById('backlink');if(bl)bl.hidden=!!s.landing;
@@ -317,6 +339,10 @@ function select(s){
   }
   const body=document.getElementById('r-body');body.innerHTML='';hideTip();
   s.render(body);
+  const o=OUTPUTS[s.id];
+  if(o){const d=document.createElement('div');d.className='ero';
+    d.innerHTML='<p class="ero-h">Expected result output</p><p class="ero-main">'+o.m+'</p><ul>'+o.i.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+    body.insertBefore(d,body.firstChild);}
 }
 function selectById(id){
   const s=SERVICES.find(x=>x.id===id);if(!s)return;
