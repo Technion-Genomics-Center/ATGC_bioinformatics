@@ -118,7 +118,8 @@
 
   .note{font-size:12px;color:var(--muted2);margin-top:14px;line-height:1.6}
   .ftr{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:18px 0 6px;color:var(--muted2);font-size:13px;border-top:1px solid var(--line);margin-top:8px}
-  .cta{display:inline-block;text-decoration:none;text-align:center;background:linear-gradient(135deg,var(--blue),#1c8bca);color:#fff;font-weight:600;padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;border:0;font-family:var(--sans);box-shadow:0 8px 20px -10px rgba(40,157,224,.7)}
+  .atgc-bio .cta{display:inline-block;text-decoration:none;text-align:center;background:linear-gradient(135deg,var(--blue),#1c8bca);color:#fff;font-weight:600;padding:10px 18px;border-radius:10px;font-size:14px;cursor:pointer;border:0;font-family:var(--sans);box-shadow:0 8px 20px -10px rgba(40,157,224,.7)}
+  .atgc-bio a.cta,.atgc-bio a.cta:hover,.atgc-bio a.cta:visited{color:#fff}
   .colorbar{height:9px;border-radius:5px;background:linear-gradient(90deg,#eef5fb,#9fd0ee,#289de0,#fbac45,#e73334);margin-top:6px;border:1px solid var(--line)}
   .cbrow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:3px}
   @keyframes shimmer{0%{transform:translateX(-60%)}100%{transform:translateX(60%)}}
@@ -282,6 +283,10 @@ const SERVICES=[
    desc:"Protein–DNA interaction mapping: alignment, peak calling and signal tracks.",
    tools:["Bowtie2","MACS2","deepTools","HOMER"],
    tag:"H3K27ac · 2 reps + input<br>peaks at FDR < 0.05",render:renderChIP},
+  {id:"cutrun",ic:"C&R",name:"CUT&RUN",
+   desc:"Antibody-targeted chromatin profiling, a low-input alternative to ChIP-seq: alignment, peak calling and signal tracks.",
+   tools:["Bowtie2","SEACR","MACS2","deepTools","ChIPseeker"],
+   tag:"CUT&RUN · pA-MNase<br>spike-in normalised · IgG control",render:renderCutRun},
   {id:"meta16s",ic:"16S",name:"16S Metagenomics",
    desc:"Microbial community profiling from amplicon data — ASVs, taxonomy and composition.",
    tools:["QIIME2","DADA2","decontam","SILVA","phyloseq"],
@@ -294,6 +299,10 @@ const SERVICES=[
    desc:"De novo long-read assembly from Oxford Nanopore data — assembly, polishing and quality assessment.",
    tools:["Dorado","Flye","Medaka","QUAST","BUSCO"],
    tag:"Oxford Nanopore · fungal<br>~40 Mb · BUSCO",render:renderAssembly},
+  {id:"olink",ic:"NPX",name:"Olink Reveal",
+   desc:"Targeted plasma proteomics by proximity extension assay: NPX normalisation, sample and assay QC, differential protein abundance and pathway interpretation.",
+   tools:["Olink NPX Manager","OlinkAnalyze","limma","clusterProfiler"],
+   tag:"1,024 proteins · PEA<br>NPX · plasma · 2 groups",render:renderOlink},
   {id:"custom",ic:"cst",name:"Custom Analysis",
    desc:"Bespoke pipelines for non-standard projects — amplicon sequencing, CRISPR editing quantification and tailored downstream analysis.",
    tools:["CRISPResso2","cutadapt","DADA2","custom R / Python"],
@@ -345,20 +354,22 @@ function renderLanding(body){
        <div class="group-head"><h2 class="group-name">Genomics</h2><span class="group-line"></span></div>
        <div class="svc-grid">
          <button class="svc-btn" onclick="selectById('variant')"><span class="svc-name">Variant Analysis</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
-         <button class="svc-btn" onclick="selectById('chip')"><span class="svc-name">ChIP-seq</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
-         <button class="svc-btn" onclick="selectById('methyl')"><span class="svc-name">DNA Methylation</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
          <button class="svc-btn" onclick="selectById('assembly')"><span class="svc-name">Genome Assembly</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
-       </div>
-     </section>
-     <section class="svc-group" style="--g:#008187">
-       <div class="group-head"><h2 class="group-name">Metagenomics</h2><span class="group-line"></span></div>
-       <div class="svc-grid">
          <button class="svc-btn" onclick="selectById('meta16s')"><span class="svc-name">16S Metagenomics</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
        </div>
      </section>
-     <section class="svc-group" style="--g:#e35b27">
-       <div class="group-head"><h2 class="group-name">Custom services</h2><span class="group-line"></span></div>
+     <section class="svc-group" style="--g:#008187">
+       <div class="group-head"><h2 class="group-name">Epigenomics</h2><span class="group-line"></span></div>
        <div class="svc-grid">
+         <button class="svc-btn" onclick="selectById('chip')"><span class="svc-name">ChIP-seq</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
+         <button class="svc-btn" onclick="selectById('cutrun')"><span class="svc-name">CUT&amp;RUN</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
+         <button class="svc-btn" onclick="selectById('methyl')"><span class="svc-name">DNA Methylation</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
+       </div>
+     </section>
+     <section class="svc-group" style="--g:#e35b27">
+       <div class="group-head"><h2 class="group-name">Proteomics &amp; custom services</h2><span class="group-line"></span></div>
+       <div class="svc-grid">
+         <button class="svc-btn" onclick="selectById('olink')"><span class="svc-name">Olink Reveal</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
          <button class="svc-btn" onclick="selectById('custom')"><span class="svc-name">Custom Analysis</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
        </div>
      </section>
@@ -3943,6 +3954,317 @@ function renderChIP(body){
      </div>
    </div>`;
   document.getElementById('ptb').innerHTML=peaks.map((p,i)=>`<tr><td style="color:var(--blue)">peak_${i+1}</td><td>chr12:${(6.10+p.c/n*0.3).toFixed(3)}M</td><td class="num">${p.h.toFixed(1)}×</td></tr>`).join('');
+}
+
+/* 6b. CUT&RUN — targeted chromatin profiling */
+function renderCutRun(body){
+  body.innerHTML=`
+   <div class="grid2">
+     <div>
+       <div class="panel"><p class="panel-title">Coverage track · target vs IgG</p>
+         <p class="panel-sub">Spike-in normalised coverage with SEACR peak calls. CUT&amp;RUN background is very low, so peaks stand out against a near-flat IgG control.</p>
+         <div class="fig"><svg id="crTrack" viewBox="0 0 560 262" style="width:100%;height:auto;display:block"></svg></div>
+       </div>
+       <div class="panel" style="margin-top:20px"><p class="panel-title">Fragment-size distribution</p>
+         <p class="panel-sub">Paired-end insert sizes. Targeted digestion releases short sub-nucleosomal fragments near 120 bp, with a nucleosomal shoulder near 180 bp.</p>
+         <div class="fig"><svg id="crFrag" viewBox="0 0 560 220" style="width:100%;height:auto;display:block"></svg></div>
+       </div>
+     </div>
+     <div>
+       <div class="panel"><p class="panel-title">Signal at peak centres</p>
+         <p class="panel-sub">Mean signal &plusmn;2 kb and the per-peak heatmap, ranked by enrichment.</p>
+         <div class="fig"><svg id="crProf" viewBox="0 0 320 342" style="width:100%;height:auto;display:block"></svg></div>
+       </div>
+       <div class="panel" style="margin-top:20px"><p class="panel-title">Peak calling &amp; QC</p>
+         <p class="panel-sub">SEACR on the spike-in normalised bedGraph; MACS2 shown for comparison.</p>
+         <table><tbody id="crQC"></tbody></table>
+       </div>
+       <p class="note">Delivered as spike-in normalised bigWig tracks for IGV, SEACR and MACS2 peak sets in BED, a peak table annotated to the nearest gene, and the QC shown here.</p>
+     </div>
+   </div>`;
+
+  const BL=CSSv('--blue')||'#289de0', MU=CSSv('--muted2')||'#93a4b5',
+        GR=CSSv('--green')||'#2bb673', LN=CSSv('--line')||'#e3ebf2',
+        MD=CSSv('--muted')||'#5f7488';
+  const txt=(p,x,y,s,o)=>{const t=E('text',Object.assign({x:x,y:y,fill:MU,'font-size':10,'font-family':'IBM Plex Mono, monospace'},o||{}));t.textContent=s;p.appendChild(t);};
+
+  /* ---------- coverage track ---------- */
+  (function(){
+    const svg=document.getElementById('crTrack'); if(!svg) return;
+    const rng=mulberry32(77), n=340, L=54, R=548;
+    const sig=[], igg=[], pk=[];
+    for(let i=0;i<n;i++){sig.push(.22+Math.abs(gauss(rng))*.12); igg.push(.20+Math.abs(gauss(rng))*.09);}
+    [44,108,168,232,292].forEach(c=>{
+      const h=3.0+rng()*3.4, w=2.4+rng()*1.6;
+      pk.push({c:c,h:h,w:w});
+      for(let i=-16;i<=16;i++){const j=c+i; if(j>=0&&j<n) sig[j]+=h*Math.exp(-(i*i)/(w*w*1.7));}
+    });
+    const max=Math.max.apply(null,sig)*1.10;
+    const X=i=>L+(R-L)*i/(n-1);
+    const area=(arr,base,hh)=>{
+      let d='M'+X(0).toFixed(1)+','+base;
+      for(let i=0;i<arr.length;i++) d+='L'+X(i).toFixed(1)+','+(base-Math.min(arr[i],max)/max*hh).toFixed(1);
+      return d+'L'+X(n-1).toFixed(1)+','+base+'Z';
+    };
+
+    // target lane
+    svg.appendChild(E('path',{d:area(sig,110,84),fill:BL,'fill-opacity':.16,stroke:BL,'stroke-width':1.1}));
+    // IgG lane, same vertical scale so the comparison is honest
+    svg.appendChild(E('path',{d:area(igg,180,44),fill:MU,'fill-opacity':.18,stroke:MU,'stroke-width':1}));
+    [110,180].forEach(y=>svg.appendChild(E('line',{x1:L,x2:R,y1:y,y2:y,stroke:LN,'stroke-width':1})));
+
+    txt(svg,8,36,'target',{fill:BL,'font-weight':600});
+    txt(svg,8,150,'IgG');
+    txt(svg,L,26,'0 – 45 RPGC (spike-in normalised)',{fill:MU});
+
+    // SEACR peak calls
+    pk.forEach((p,i)=>{
+      const w=Math.max(7,p.w*4.2), x=X(p.c)-w/2;
+      const r=E('rect',{x:x.toFixed(1),y:196,width:w.toFixed(1),height:9,rx:2,fill:GR});
+      r.style.cursor='pointer';
+      r.addEventListener('mousemove',e=>showTip('<b>peak_'+(i+1)+'</b><br>SEACR stringent<br>fold '+p.h.toFixed(1)+'&times;',e.clientX,e.clientY));
+      r.addEventListener('mouseleave',hideTip);
+      svg.appendChild(r);
+    });
+    txt(svg,8,204,'peaks',{fill:GR,'font-weight':600});
+
+    // gene model
+    svg.appendChild(E('line',{x1:X(30),x2:X(300),y1:227,y2:227,stroke:MD,'stroke-width':1.4}));
+    [[36,64],[104,140],[180,214],[262,296]].forEach(e=>{
+      svg.appendChild(E('rect',{x:X(e[0]),y:221,width:X(e[1])-X(e[0]),height:12,rx:2,fill:MD,'fill-opacity':.75}));
+    });
+    txt(svg,8,231,'gene');
+    txt(svg,L,252,'chr7:24,180,000');
+    txt(svg,R,252,'24,246,000',{'text-anchor':'end'});
+  })();
+
+  /* ---------- fragment-size distribution ---------- */
+  (function(){
+    const svg=document.getElementById('crFrag'); if(!svg) return;
+    const L=52,R=548,B=172,T=26, HH=B-T;
+    const g=(x,mu,sd)=>Math.exp(-((x-mu)*(x-mu))/(2*sd*sd));
+    const tgt=x=>0.98*g(x,122,22)+0.42*g(x,186,30)+0.13*g(x,352,46);
+    const ctl=x=>0.34*g(x,168,54)+0.20*g(x,300,90);
+    const X=bp=>L+(R-L)*bp/500;
+    const path=f=>{let d='M'+L+','+B;
+      for(let bp=0;bp<=500;bp+=2) d+='L'+X(bp).toFixed(1)+','+(B-f(bp)*HH*0.92).toFixed(1);
+      return d+'L'+R+','+B+'Z';};
+
+    [0,100,200,300,400,500].forEach(bp=>{
+      svg.appendChild(E('line',{x1:X(bp),x2:X(bp),y1:T,y2:B,stroke:LN,'stroke-width':1}));
+      txt(svg,X(bp),190,bp,{'text-anchor':'middle'});
+    });
+    svg.appendChild(E('line',{x1:L,x2:R,y1:B,y2:B,stroke:LN,'stroke-width':1.2}));
+
+    svg.appendChild(E('path',{d:path(ctl),fill:MU,'fill-opacity':.22,stroke:MU,'stroke-width':1.2}));
+    svg.appendChild(E('path',{d:path(tgt),fill:BL,'fill-opacity':.20,stroke:BL,'stroke-width':1.6}));
+
+    // call out the two diagnostic modes
+    [[122,'sub-nucleosomal'],[186,'nucleosomal']].forEach((m,i)=>{
+      svg.appendChild(E('line',{x1:X(m[0]),x2:X(m[0]),y1:B-tgt(m[0])*HH*0.92-6,y2:T+4+i*14,stroke:BL,'stroke-width':1,'stroke-dasharray':'3 3','stroke-opacity':.7}));
+      txt(svg,X(m[0])+6,T+8+i*14,m[0]+' bp · '+m[1],{fill:BL});
+    });
+    txt(svg,X(250),208,'insert size (bp)',{'text-anchor':'middle',fill:MD});
+
+    svg.appendChild(E('rect',{x:L,y:T-14,width:9,height:9,rx:2,fill:BL}));      txt(svg,L+14,T-6,'target');
+    svg.appendChild(E('rect',{x:L+70,y:T-14,width:9,height:9,rx:2,fill:MU}));   txt(svg,L+84,T-6,'IgG');
+  })();
+
+  /* ---------- average profile + per-peak heatmap ---------- */
+  (function(){
+    const svg=document.getElementById('crProf'); if(!svg) return;
+    const rng=mulberry32(31);
+    const L=44,R=306,PT=24,PB=112, HT=132,HB=316, COLS=52,ROWS=56;
+    const X=i=>L+(R-L)*i/(COLS-1);
+    const prof=i=>{const d=(i-(COLS-1)/2)/(COLS-1)*4; return Math.exp(-(d*d)/0.16);};
+
+    // per-peak matrix, rows ranked by enrichment
+    const rows=[];
+    for(let r=0;r<ROWS;r++){
+      const amp=Math.pow(1-r/ROWS,1.5)*0.95+0.05, jit=(rng()-0.5)*3.2, wid=0.16+rng()*0.12;
+      const row=[];
+      for(let c=0;c<COLS;c++){
+        const d=(c-(COLS-1)/2)/(COLS-1)*4-jit*0.08;
+        row.push(Math.max(0,Math.min(1,amp*Math.exp(-(d*d)/wid)+rng()*0.06)));
+      }
+      rows.push({v:row,s:amp});
+    }
+    rows.sort((a,b)=>b.s-a.s);
+
+    // mean profile
+    const mean=[];
+    for(let c=0;c<COLS;c++){let s=0;for(let r=0;r<ROWS;r++)s+=rows[r].v[c];mean.push(s/ROWS);}
+    const mx=Math.max.apply(null,mean)*1.15;
+    let d='M'+L+','+PB;
+    for(let c=0;c<COLS;c++) d+='L'+X(c).toFixed(1)+','+(PB-mean[c]/mx*(PB-PT)).toFixed(1);
+    d+='L'+R+','+PB+'Z';
+    svg.appendChild(E('path',{d:d,fill:BL,'fill-opacity':.18,stroke:BL,'stroke-width':1.6}));
+    // flat IgG for contrast
+    let di='M'+L+','+PB;
+    for(let c=0;c<COLS;c++) di+='L'+X(c).toFixed(1)+','+(PB-(0.045+ (rng()-0.5)*0.012)/mx*(PB-PT)).toFixed(1);
+    svg.appendChild(E('path',{d:di,fill:'none',stroke:MU,'stroke-width':1.2}));
+    svg.appendChild(E('line',{x1:L,x2:R,y1:PB,y2:PB,stroke:LN,'stroke-width':1.2}));
+    txt(svg,L,PT-8,'mean signal',{fill:MD});
+
+    // heatmap
+    const cw=(R-L)/COLS, ch=(HB-HT)/ROWS;
+    const col=t=>{t=Math.max(0,Math.min(1,t));const e=Math.pow(t,0.75);
+      return 'rgb('+Math.round(255-215*e)+','+Math.round(255-98*e)+','+Math.round(255-31*e)+')';};
+    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+      svg.appendChild(E('rect',{x:(L+c*cw).toFixed(2),y:(HT+r*ch).toFixed(2),
+        width:(cw+0.5).toFixed(2),height:(ch+0.5).toFixed(2),fill:col(rows[r].v[c])}));
+    }
+    svg.appendChild(E('rect',{x:L,y:HT,width:R-L,height:HB-HT,fill:'none',stroke:LN,'stroke-width':1}));
+    txt(svg,8,HT+12,'peaks',{fill:MD});
+    txt(svg,8,HB,'n=12,431',{fill:MU,'font-size':9});
+
+    [[L,'-2 kb'],[(L+R)/2,'centre'],[R,'+2 kb']].forEach((t,i)=>{
+      txt(svg,t[0],HB+18,t[1],{'text-anchor':i===0?'start':(i===2?'end':'middle')});
+    });
+  })();
+
+  /* ---------- QC table ---------- */
+  const QC=[
+    ['Fragments after dedup','8.9 M'],
+    ['Duplicate rate','6.4%'],
+    ['Spike-in scale factor','0.283'],
+    ['Peaks · SEACR stringent','12,431'],
+    ['Peaks · SEACR relaxed','28,904'],
+    ['Peaks · MACS2 narrow','14,772'],
+    ['FRiP · target','41.2%'],
+    ['FRiP · IgG','1.8%']
+  ];
+  const tb=document.getElementById('crQC');
+  if(tb) tb.innerHTML=QC.map(r=>'<tr><td>'+r[0]+'</td><td class="num" style="color:var(--blue)">'+r[1]+'</td></tr>').join('');
+}
+
+/* 9b. Olink Reveal — targeted plasma proteomics (PEA) */
+function renderOlink(body){
+  body.innerHTML=`
+   <div class="grid2">
+     <div>
+       <div class="panel"><p class="panel-title">Differential protein abundance</p>
+         <p class="panel-sub">NPX log<sub>2</sub> fold-change against adjusted p-value, 1,024 proteins. Hover a point for the protein.</p>
+         <div class="fig"><svg id="olVolc" viewBox="0 0 560 330" style="width:100%;height:auto;display:block"></svg></div>
+         <div class="legend" id="olLeg"></div>
+       </div>
+       <div class="panel" style="margin-top:20px"><p class="panel-title">NPX distribution per sample</p>
+         <p class="panel-sub">Median-centred NPX after normalisation. Samples failing the QC deviation threshold are flagged and excluded.</p>
+         <div class="fig"><svg id="olBox" viewBox="0 0 560 210" style="width:100%;height:auto;display:block"></svg></div>
+       </div>
+     </div>
+     <div>
+       <div class="panel"><p class="panel-title">Sample PCA</p>
+         <p class="panel-sub">Principal components on NPX values, coloured by group.</p>
+         <div class="fig"><svg id="olPCA" viewBox="0 0 320 270" style="width:100%;height:auto;display:block"></svg></div>
+       </div>
+       <div class="panel" style="margin-top:20px"><p class="panel-title">Top differential proteins</p>
+         <p class="panel-sub">Ranked by adjusted p-value.</p>
+         <table><thead><tr><th>protein</th><th class="num">log2FC</th><th class="num">p.adj</th></tr></thead><tbody id="olTab"></tbody></table>
+       </div>
+       <p class="note">Delivered as the normalised NPX matrix, per-sample and per-assay QC, the full differential-abundance table and pathway enrichment on the significant set.</p>
+     </div>
+   </div>`;
+
+  const BL=CSSv('--blue')||'#289de0', RD=CSSv('--red')||'#e73334', MU=CSSv('--muted2')||'#93a4b5',
+        NS=CSSv('--ns')||'#bcc8d2', LN=CSSv('--line')||'#e3ebf2', MD=CSSv('--muted')||'#5f7488',
+        OR=CSSv('--orange')||'#fbac45';
+  const txt=(p,x,y,s,o)=>{const t=E('text',Object.assign({x:x,y:y,fill:MU,'font-size':10,'font-family':'IBM Plex Mono, monospace'},o||{}));t.textContent=s;p.appendChild(t);};
+
+  const PROT=["IL6","TNF","CXCL8","CCL2","IL10","IL18","VEGFA","HGF","GDF15","MMP9","TNFRSF1A","TNFRSF1B",
+              "LEP","ADIPOQ","IGFBP1","IGFBP2","CSF1","CD14","LGALS3","FGF21","PLAUR","SPP1","CHI3L1","OSM",
+              "IL1RN","CXCL9","CXCL10","CCL19","TGFB1","THBS2","MPO","REN","NPPB","CTSD","TIMP1","SERPINE1"];
+
+  /* ---------- volcano ---------- */
+  const rng=mulberry32(19), N=1024, pts=[];
+  for(let i=0;i<N;i++){
+    let lfc=gauss(rng)*0.34;
+    if(rng()<0.06) lfc*=3.1;
+    let nlp=Math.max(0,Math.abs(lfc)*3.6+gauss(rng)*0.7);
+    if(rng()<0.55) nlp*=rng()*0.8;
+    nlp=Math.min(nlp,9.4);
+    pts.push({n:PROT[i%PROT.length]+(i>=PROT.length?"":""),lfc:lfc,nlp:nlp});
+  }
+  (function(){
+    const svg=document.getElementById('olVolc'); if(!svg) return;
+    const L=48,R=546,T=18,B=286, XL=-2.2,XR=2.2,YT=10;
+    const X=v=>L+(v-XL)/(XR-XL)*(R-L), Y=v=>B-v/YT*(B-T);
+    const CUT=1.30103, FC=0.4;                                   // p.adj 0.05, |log2FC| 0.4
+    for(let v=-2;v<=2;v++){svg.appendChild(E('line',{x1:X(v),x2:X(v),y1:T,y2:B,stroke:LN,'stroke-width':1}));txt(svg,X(v),B+16,v,{'text-anchor':'middle'});}
+    for(let v=0;v<=8;v+=2){svg.appendChild(E('line',{x1:L,x2:R,y1:Y(v),y2:Y(v),stroke:LN,'stroke-width':1}));txt(svg,L-8,Y(v)+3,v,{'text-anchor':'end'});}
+    [[-FC],[FC]].forEach(a=>svg.appendChild(E('line',{x1:X(a[0]),x2:X(a[0]),y1:T,y2:B,stroke:OR,'stroke-width':1,'stroke-dasharray':'4 3'})));
+    svg.appendChild(E('line',{x1:L,x2:R,y1:Y(CUT),y2:Y(CUT),stroke:OR,'stroke-width':1,'stroke-dasharray':'4 3'}));
+
+    let up=0,dn=0,ns=0;
+    pts.forEach(p=>{
+      const sig=p.nlp>=CUT&&Math.abs(p.lfc)>=FC;
+      const c=sig?(p.lfc>0?RD:BL):NS;
+      if(sig){p.lfc>0?up++:dn++;}else ns++;
+      const cc=E('circle',{cx:X(p.lfc).toFixed(1),cy:Y(p.nlp).toFixed(1),r:sig?2.6:1.9,fill:c,'fill-opacity':sig?.85:.5});
+      if(sig){cc.style.cursor='pointer';
+        cc.addEventListener('mousemove',e=>showTip('<b>'+p.n+'</b><br>log2FC '+p.lfc.toFixed(2)+'<br>p.adj '+Math.pow(10,-p.nlp).toExponential(1),e.clientX,e.clientY));
+        cc.addEventListener('mouseleave',hideTip);}
+      svg.appendChild(cc);
+    });
+    txt(svg,(L+R)/2,B+34,'NPX log2 fold-change',{'text-anchor':'middle',fill:MD});
+    txt(svg,14,(T+B)/2,'-log10 p.adj',{'text-anchor':'middle',fill:MD,transform:'rotate(-90 14 '+((T+B)/2)+')'});
+
+    const lg=document.getElementById('olLeg');
+    if(lg) lg.innerHTML=
+      '<span class="lg"><span class="sw" style="background:'+RD+'"></span>'+up+' higher</span>'+
+      '<span class="lg"><span class="sw" style="background:'+BL+'"></span>'+dn+' lower</span>'+
+      '<span class="lg"><span class="sw" style="background:'+NS+'"></span>'+ns+' n.s.</span>';
+  })();
+
+  /* ---------- per-sample NPX boxes ---------- */
+  (function(){
+    const svg=document.getElementById('olBox'); if(!svg) return;
+    const r2=mulberry32(5), n=18, L=44,R=546,T=20,B=160;
+    const YL=-1.6,YH=1.6, Y=v=>B-(v-YL)/(YH-YL)*(B-T);
+    [-1,0,1].forEach(v=>{svg.appendChild(E('line',{x1:L,x2:R,y1:Y(v),y2:Y(v),stroke:LN,'stroke-width':1}));txt(svg,L-8,Y(v)+3,v,{'text-anchor':'end'});});
+    const w=(R-L)/n;
+    for(let i=0;i<n;i++){
+      const bad=(i===11);
+      const drift=bad?0.62:gauss(r2)*0.10;
+      const med=drift, q1=med-0.30-r2()*0.06, q3=med+0.30+r2()*0.06,
+            lo=q1-0.34-r2()*0.10, hi=q3+0.34+r2()*0.10;
+      const cx=L+w*(i+0.5), bw=w*0.52, c=bad?OR:BL;
+      svg.appendChild(E('line',{x1:cx,x2:cx,y1:Y(hi),y2:Y(lo),stroke:c,'stroke-width':1}));
+      svg.appendChild(E('rect',{x:cx-bw/2,y:Y(q3),width:bw,height:Y(q1)-Y(q3),rx:2,fill:c,'fill-opacity':.22,stroke:c,'stroke-width':1}));
+      svg.appendChild(E('line',{x1:cx-bw/2,x2:cx+bw/2,y1:Y(med),y2:Y(med),stroke:c,'stroke-width':1.6}));
+      if(bad){txt(svg,cx,Y(hi)-7,'QC flag',{'text-anchor':'middle',fill:OR,'font-size':9});}
+    }
+    svg.appendChild(E('line',{x1:L,x2:R,y1:B,y2:B,stroke:LN,'stroke-width':1.2}));
+    txt(svg,(L+R)/2,B+30,'samples (n = 18)',{'text-anchor':'middle',fill:MD});
+    txt(svg,14,(T+B)/2,'NPX deviation',{'text-anchor':'middle',fill:MD,transform:'rotate(-90 14 '+((T+B)/2)+')'});
+  })();
+
+  /* ---------- PCA ---------- */
+  (function(){
+    const svg=document.getElementById('olPCA'); if(!svg) return;
+    const r3=mulberry32(88), L=46,R=304,T=18,B=214;
+    const X=v=>L+(v+3.4)/6.8*(R-L), Y=v=>B-(v+3.0)/6.0*(B-T);
+    svg.appendChild(E('rect',{x:L,y:T,width:R-L,height:B-T,fill:'none',stroke:LN,'stroke-width':1}));
+    [[-2,0,2]].forEach(()=>{});
+    [-2,0,2].forEach(v=>{svg.appendChild(E('line',{x1:X(v),x2:X(v),y1:T,y2:B,stroke:LN,'stroke-width':1}));
+                         svg.appendChild(E('line',{x1:L,x2:R,y1:Y(v),y2:Y(v),stroke:LN,'stroke-width':1}));});
+    [[-1.5,BL,'control'],[1.5,RD,'case']].forEach(g=>{
+      for(let i=0;i<9;i++){
+        const x=g[0]+gauss(r3)*0.72, y=gauss(r3)*1.05;
+        svg.appendChild(E('circle',{cx:X(x).toFixed(1),cy:Y(y).toFixed(1),r:4.4,fill:g[1],'fill-opacity':.7,stroke:'#fff','stroke-width':1}));
+      }
+    });
+    txt(svg,(L+R)/2,B+22,'PC1 · 34.8%',{'text-anchor':'middle',fill:MD});
+    txt(svg,14,(T+B)/2,'PC2 · 11.2%',{'text-anchor':'middle',fill:MD,transform:'rotate(-90 14 '+((T+B)/2)+')'});
+    svg.appendChild(E('rect',{x:L+6,y:T+8,width:9,height:9,rx:2,fill:BL}));  txt(svg,L+20,T+16,'control');
+    svg.appendChild(E('rect',{x:L+76,y:T+8,width:9,height:9,rx:2,fill:RD})); txt(svg,L+90,T+16,'case');
+  })();
+
+  /* ---------- top table ---------- */
+  const top=pts.slice().sort((a,b)=>b.nlp-a.nlp).filter((p,i,arr)=>arr.findIndex(q=>q.n===p.n)===i).slice(0,7);
+  const tb=document.getElementById('olTab');
+  if(tb) tb.innerHTML=top.map(p=>'<tr><td style="color:var(--blue)">'+p.n+'</td><td class="num" style="color:'+(p.lfc>0?RD:BL)+'">'+
+    (p.lfc>0?'+':'')+p.lfc.toFixed(2)+'</td><td class="num">'+Math.pow(10,-p.nlp).toExponential(1)+'</td></tr>').join('');
 }
 
 /* 6. 16S */
