@@ -146,10 +146,10 @@
 .backlink[hidden]{display:none}
 .land-intro{padding:2px 0 26px}
 .land-intro h1.hero-title{font-family:var(--display);color:#1b2a36;font-size:clamp(30px,4.4vw,46px);font-weight:700;letter-spacing:-.5px;line-height:1.04;margin:0;max-width:820px}
-/* sized so the sentence sits on a single line across the full column at desktop
-   widths; it wraps normally once the viewport is too narrow to hold it */
-.land-intro .land-lede{color:var(--muted);font-size:14px;line-height:1.6;margin:0;max-width:none}
-@media (max-width:1100px){.land-intro .land-lede{font-size:15px}}
+.land-intro .land-lede{color:var(--muted);font-size:16px;line-height:1.62;margin:0 0 13px;max-width:none}
+.land-intro .land-lede:last-of-type{margin-bottom:0}
+.land-outro{margin-top:6px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:15px;line-height:1.62}
+.land-outro a{color:var(--blue);font-weight:600}
 .svc-group{margin:0 0 26px}
 .group-head{display:flex;align-items:center;gap:14px;margin:0 0 12px}
 .group-name{font-family:var(--display);font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin:0;line-height:1.2}
@@ -332,7 +332,8 @@ function renderLanding(body){
      <div class="land-intro">
        <h1 class="hero-title">Bioinformatics</h1>
        <div class="hero-rule"></div>
-       <p class="land-lede">In addition to cutting-edge data generation, the ATGC provides comprehensive bioinformatics services built on robust, established pipelines and the most reliable open-source tools in the NGS field.</p>
+       <p class="land-lede">In addition to cutting-edge data generation, the ATGC provides comprehensive bioinformatics services to support your research. Our expert bioinformatics team offers both initial and advanced analyses, leveraging robust, established pipelines built upon the most reliable open-source tools in the NGS field.</p>
+       <p class="land-lede">Recognizing that each project is unique, the ATGC bioinformatics team tailors pipelines to the specific characteristics of your data, ensuring the transformation of raw data into meaningful, manageable, and interpretable results. We collaborate closely with researchers throughout the process, providing regular updates on progress and delivering high-quality data sets and visualizations that meet your research needs.</p>
      </div>
      <section class="svc-group" style="--g:#1da5ff">
        <div class="group-head"><h2 class="group-name">Transcriptomics</h2><span class="group-line"></span></div>
@@ -366,6 +367,7 @@ function renderLanding(body){
          <button class="svc-btn" onclick="selectById('custom')"><span class="svc-name">Custom Analysis</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
        </div>
      </section>
+     <p class="land-outro">While these are some of our most common analyses, the ATGC offers a variety of additional bioinformatics services tailored to the specific needs of your project. Please <a href="https://atgc.net.technion.ac.il/contact-us/">contact us</a> for a consultation on custom analysis options.</p>
    </div>`;
 }
 
