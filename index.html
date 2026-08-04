@@ -302,7 +302,7 @@ const SERVICES=[
   {id:"olink",ic:"NPX",name:"Olink Reveal",
    desc:"Targeted plasma proteomics by proximity extension assay: NPX normalisation, sample and assay QC, differential protein abundance and pathway interpretation.",
    tools:["Olink NPX Manager","OlinkAnalyze","limma"],
-   tag:"1,024 proteins · PEA<br>NPX · plasma · 2 groups",render:renderOlink},
+   tag:"1,034 proteins · PEA<br>NPX · plasma · 2 groups",render:renderOlink},
   {id:"custom",ic:"cst",name:"Custom Analysis",
    desc:"Bespoke pipelines for non-standard projects — amplicon sequencing, CRISPR editing quantification and tailored downstream analysis.",
    tools:["CRISPResso2","cutadapt","DADA2","custom R / Python"],
@@ -322,8 +322,7 @@ const OUTPUTS={
   cosmx:{m:"<b>Main results file.</b> An AtoMx export with the single-cell expression matrix, cell metadata and segmentation polygons.",i:["<b>Seurat object</b> in RDS format, with per-cell counts, spatial coordinates and cell-type calls.","<b>Cell typing table.</b> Assigned cell types with the marker support behind each cluster.","<b>Niche and neighbourhood analysis.</b> Spatial domains and cell-to-cell proximity summaries.","<b>Multiplexed images.</b> Marker channel overlays for the imaged tissue."]},
   methyl:{m:"<b>Main results file.</b> A .csv file of per-cytosine methylation calls with coverage and methylation percentage.",i:["<b>DMC / DMR table.</b> Differentially methylated cytosines and regions with methylation difference and adjusted p-value.","<b>Genomic context annotation.</b> Regions annotated to promoters, gene bodies, CpG islands and shores.","<b>Heatmap and violin plots.</b> Per-sample methylation across the top differential regions.","<b>Bismark coverage files</b> loadable in a genome browser."]},
   assembly:{m:"<b>Main results file.</b> A polished assembly in FASTA format with per-contig statistics.",i:["<b>Assembly summary.</b> Contig count, total length, N50, L50, GC content and mean coverage (QUAST).","<b>BUSCO completeness report.</b> Complete, fragmented and missing single-copy orthologues.","<b>Coverage tracks.</b> Read depth across each contig, loadable in IGV.","<b>Variant annotation table</b> (optional). snpEff effects and classes where a reference is available."]},
-  olink:{m:"<b>Main results file.</b> A normalised NPX matrix in .csv format, one row per sample and one column per protein assay.",i:["<b>Sample and assay QC report.</b> Per-sample NPX deviation, control performance and QC flags.","<b>Differential abundance table.</b> NPX log2 fold change with adjusted p-value for every protein.","<b>Volcano and PCA plots.</b> Group separation and the proteins driving it.","<b>Pathway enrichment</b> run with the panel itself as the background set."]},
-  custom:{m:"<b>Deliverables</b> are agreed with you at project start, and typically pair a results table with the figures needed to interpret it.",i:["<b>Editing efficiency and indel spectra</b> per amplicon (CRISPResso2).","<b>Knock-in / HDR quantification</b> where the design calls for it.","<b>Per-sample summary table</b> with read counts and filtering statistics.","<b>Analysis code and a written methods section</b> so the work can be reproduced and cited."]}
+  olink:{m:"<b>Main results file.</b> A normalised NPX matrix in .csv format, one row per sample and one column per protein assay.",i:["<b>Sample and assay QC report.</b> Per-sample NPX deviation, control performance and QC flags.","<b>Differential abundance table.</b> NPX log2 fold change with adjusted p-value for every protein.","<b>Volcano and PCA plots.</b> Group separation and the proteins driving it.","<b>Pathway enrichment</b> run with the panel itself as the background set."]}
 };
 
 function select(s){
@@ -4110,7 +4109,7 @@ function renderOlink(body){
    <div class="grid2">
      <div>
        <div class="panel"><p class="panel-title">Differential protein abundance</p>
-         <p class="panel-sub">NPX log<sub>2</sub> fold-change against adjusted p-value, 1,024 proteins. Hover a point for the protein.</p>
+         <p class="panel-sub">NPX log<sub>2</sub> fold-change against adjusted p-value, 1,034 proteins. Hover a point for the protein.</p>
          <div class="fig"><svg id="olVolc" viewBox="0 0 560 330" style="width:100%;height:auto;display:block"></svg></div>
          <div class="legend" id="olLeg"></div>
        </div>
@@ -4142,7 +4141,7 @@ function renderOlink(body){
               "IL1RN","CXCL9","CXCL10","CCL19","TGFB1","THBS2","MPO","REN","NPPB","CTSD","TIMP1","SERPINE1"];
 
   /* ---------- volcano ---------- */
-  const rng=mulberry32(19), N=1024, pts=[];
+  const rng=mulberry32(19), N=1034, pts=[];
   for(let i=0;i<N;i++){
     let lfc=gauss(rng)*0.34;
     if(rng()<0.06) lfc*=3.1;
