@@ -282,14 +282,10 @@ const SERVICES=[
    desc:"SNP / indel / structural-variant calling, annotation and clinical interpretation.",
    tools:["BWA-MEM2","GATK4","DeepVariant","VEP","ANNOVAR"],
    tag:"WES · trio<br>filter by consequence",render:renderVariant},
-  {id:"chip",ic:"chip",name:"ChIP-seq",
-   desc:"Protein–DNA interaction mapping: alignment, peak calling and signal tracks.",
-   tools:["Bowtie2","MACS2","deepTools","HOMER"],
-   tag:"H3K27ac · 2 reps + input<br>peaks at FDR < 0.05",render:renderChIP},
-  {id:"cutrun",ic:"C&R",name:"CUT&RUN",
-   desc:"Antibody-targeted chromatin profiling, a low-input alternative to ChIP-seq: alignment, peak calling and signal tracks.",
-   tools:["Bowtie2","SEACR","MACS2","deepTools","ChIPseeker"],
-   tag:"CUT&RUN · pA-MNase<br>spike-in normalised · IgG control",render:renderCutRun},
+  {id:"chip",ic:"chip",name:"ChIP-seq & CUT&RUN",
+   desc:"Protein–DNA interaction mapping by ChIP-seq and CUT&RUN: alignment, peak calling, signal tracks and differential binding.",
+   tools:["Bowtie2","MACS2","SEACR","deepTools","HOMER"],
+   tag:"H3K27ac ChIP + CUT&RUN<br>spike-in normalised · IgG control",render:renderChromatin},
   {id:"meta16s",ic:"16S",name:"16S Metagenomics",
    desc:"Microbial community profiling from amplicon data — ASVs, taxonomy and composition.",
    tools:["QIIME2","DADA2","decontam","SILVA","phyloseq"],
@@ -364,8 +360,7 @@ function renderLanding(body){
      <section class="svc-group" style="--g:#008187">
        <div class="group-head"><h2 class="group-name">Epigenomics</h2><span class="group-line"></span></div>
        <div class="svc-grid">
-         <button class="svc-btn" onclick="selectById('chip')"><span class="svc-name">ChIP-seq</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
-         <button class="svc-btn" onclick="selectById('cutrun')"><span class="svc-name">CUT&amp;RUN</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
+         <button class="svc-btn" onclick="selectById('chip')"><span class="svc-name">ChIP-seq &amp; CUT&amp;RUN</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
          <button class="svc-btn" onclick="selectById('methyl')"><span class="svc-name">DNA Methylation</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
        </div>
      </section>
@@ -3866,7 +3861,7 @@ function renderVisiumHD(body){
      <div>
         <div class="panel">
           <p class="panel-title">What we offer</p>
-          <p style="font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.62">We mostly run <b style="color:var(--ink)">10x Genomics</b> — Visium HD spatial and Chromium single-cell. Primary analysis in <b style="color:var(--ink)">Seurat</b>, delivered with <b style="color:var(--ink)">Loupe Browser</b> for interactive exploration, with <b style="color:var(--ink)">customizable</b> downstream analysis on request.</p>
+          <p style="font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.62">Primary analysis in <b style="color:var(--ink)">Seurat</b>, delivered with <b style="color:var(--ink)">Loupe Browser</b> for interactive exploration, with <b style="color:var(--ink)">customizable</b> downstream analysis on request.</p>
                   <div class="fig" id="hdgif-ph" style="position:relative;width:100%;aspect-ratio:500/322;border-radius:10px;border:1px dashed #c7d2dc;background:linear-gradient(120deg,#eef3f7,#f6fafc);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px;gap:5px;padding:12px"><span>Loading Visium HD demo&hellip;</span><span style="font-size:11px;color:var(--muted2)">~2 MB</span></div><img id="hdgif" alt="Visium HD spatial gene expression &mdash; graph-based clusters in Loupe Browser" data-src="assets/HD-ezgif.com-optimize.gif" style="width:100%;border-radius:10px;border:1px solid var(--line);display:none">
           <p class="panel-sub" style="margin-top:7px;margin-bottom:0">Visium HD — graph-based clusters in Loupe Browser (2 µm bins)</p>
         <p class="note">These are real example outputs. In Loupe Browser you pan, zoom and overlay any gene on the tissue — not everything has to live on the website.</p>
@@ -3940,31 +3935,16 @@ function renderVariant(body){
 }
 
 /* 5. ChIP-seq */
-function renderChIP(body){
-  const rng=mulberry32(23);const W=560,H=300,m={l:40,r:14,t:14,b:34};const n=300;const sig=[],inp=[];const peaks=[];
-  for(let i=0;i<n;i++){sig.push(0.4+Math.abs(gauss(rng))*0.3);inp.push(0.3+Math.abs(gauss(rng))*0.2);}
-  [40,95,150,205,255].forEach(c=>{const h=2+rng()*3.5;const w=5+Math.floor(rng()*7);peaks.push({c,h});
-    for(let i=-w;i<=w;i++){if(c+i>=0&&c+i<n)sig[c+i]+=h*Math.exp(-(i*i)/(w*1.4));}});
-  body.innerHTML=`
-   <div class="grid2">
-     <div class="panel"><p class="panel-title">Coverage track · H3K27ac</p>
-        <p class="panel-sub">Read-density tracks across samples at the <i>Cdkn1a</i> locus, with MACS2 peak calls and gene model (IGV).</p>
-        <div class="fig"><img src="assets/chip-track.png" alt="ChIP-seq read-density tracks at the Cdkn1a locus with MACS2 peak calls (IGV)" style="width:100%;display:block;border-radius:8px;border:1px solid var(--line)"></div></div>
-     <div>
-        <div class="panel"><p class="panel-title">Called peaks</p><p class="panel-sub">MACS2 · FDR &lt; 0.05</p>
-          <table><thead><tr><th>peak</th><th>locus</th><th class="num">fold</th></tr></thead><tbody id="ptb"></tbody></table></div>
-        <p class="note">Reports ship as bigWig tracks loadable in IGV plus an annotated peak table with nearest-gene assignment.</p>
-     </div>
-   </div>`;
-  document.getElementById('ptb').innerHTML=peaks.map((p,i)=>`<tr><td style="color:var(--blue)">peak_${i+1}</td><td>chr12:${(6.10+p.c/n*0.3).toFixed(3)}M</td><td class="num">${p.h.toFixed(1)}×</td></tr>`).join('');
-}
-
-/* 6b. CUT&RUN — targeted chromatin profiling */
-function renderCutRun(body){
+/* 6. Chromatin profiling — ChIP-seq and CUT&RUN share one report */
+function renderChromatin(body){
   body.innerHTML=`
    <div class="grid2">
      <div>
-       <div class="panel"><p class="panel-title">Coverage track · target vs IgG</p>
+       <div class="panel"><p class="panel-title">ChIP-seq · coverage track</p>
+         <p class="panel-sub">Read-density tracks at the <i>Cdkn1a</i> locus with MACS2 peak calls and gene model (IGV), H3K27ac against input.</p>
+         <div class="fig"><img src="assets/chip-track.png" alt="ChIP-seq read-density tracks at the Cdkn1a locus with MACS2 peak calls (IGV)" style="width:100%;display:block;border-radius:8px;border:1px solid var(--line)"></div>
+       </div>
+       <div class="panel" style="margin-top:20px"><p class="panel-title">CUT&amp;RUN · target vs IgG</p>
          <p class="panel-sub">Spike-in normalised coverage with SEACR peak calls. CUT&amp;RUN background is very low, so peaks stand out against a near-flat IgG control.</p>
          <div class="fig"><svg id="crTrack" viewBox="0 0 560 262" style="width:100%;height:auto;display:block"></svg></div>
        </div>
@@ -4131,9 +4111,9 @@ function renderCutRun(body){
     ['Fragments after dedup','8.9 M'],
     ['Duplicate rate','6.4%'],
     ['Spike-in scale factor','0.283'],
-    ['Peaks · SEACR stringent','12,431'],
-    ['Peaks · SEACR relaxed','28,904'],
-    ['Peaks · MACS2 narrow','14,772'],
+    ['ChIP-seq peaks · MACS2','18,204'],
+    ['CUT&RUN peaks · SEACR stringent','12,431'],
+    ['CUT&RUN peaks · SEACR relaxed','28,904'],
     ['FRiP · target','41.2%'],
     ['FRiP · IgG','1.8%']
   ];
@@ -4772,6 +4752,13 @@ function renderMethylation(body){
 function renderAssembly(body){
   body.innerHTML=`
    <div class="panel">
+     <p class="panel-title">Assembly summary statistics</p>
+     <p class="panel-sub">Flye assembly polished with Medaka, assessed with QUAST and BUSCO. Summary laid out as in the EPI2ME wf-bacterial-genomes report.</p>
+     <div class="stats" style="grid-template-columns:repeat(4,1fr);margin-top:0"><div class="stat"><div class="v">5.24 Mb</div><div class="l">total length</div></div><div class="stat"><div class="v">6</div><div class="l">contigs</div></div><div class="stat"><div class="v">4.81 Mb</div><div class="l">largest contig</div></div><div class="stat"><div class="v">4.81 Mb</div><div class="l">N50</div></div><div class="stat"><div class="v">1</div><div class="l">L50</div></div><div class="stat"><div class="v">50.6%</div><div class="l">GC content</div></div><div class="stat"><div class="v">118&times;</div><div class="l">mean coverage</div></div><div class="stat"><div class="v">14.2 kb</div><div class="l">read N50</div></div></div>
+     <table style="margin-top:18px"><thead><tr><th>contig</th><th class="num">length (bp)</th><th class="num">coverage</th><th class="num">GC</th><th class="num">topology</th></tr></thead><tbody><tr><td style="color:var(--blue)"><b>contig_1</b></td><td class="num">4,812,006</td><td class="num">118&times;</td><td class="num">50.9%</td><td class="num" style="color:var(--muted2)">circular</td></tr><tr><td style="color:var(--blue)"><b>contig_2</b></td><td class="num">241,556</td><td class="num">126&times;</td><td class="num">49.4%</td><td class="num" style="color:var(--muted2)">circular</td></tr><tr><td style="color:var(--blue)"><b>contig_7</b></td><td class="num">109,433</td><td class="num">545&times;</td><td class="num">47.1%</td><td class="num" style="color:var(--muted2)">circular</td></tr><tr><td style="color:var(--blue)"><b>contig_4</b></td><td class="num">58,102</td><td class="num">132&times;</td><td class="num">48.6%</td><td class="num" style="color:var(--muted2)">linear</td></tr><tr><td style="color:var(--blue)"><b>contig_5</b></td><td class="num">14,880</td><td class="num">109&times;</td><td class="num">46.2%</td><td class="num" style="color:var(--muted2)">linear</td></tr><tr><td style="color:var(--blue)"><b>contig_6</b></td><td class="num">6,914</td><td class="num">97&times;</td><td class="num">45.8%</td><td class="num" style="color:var(--muted2)">linear</td></tr></tbody></table>
+     <p class="note" style="margin-top:12px">BUSCO (bacteria_odb10, n=124): <b style="color:var(--ink)">C:99.2%</b> [S:98.7%, D:0.5%] &middot; F:0.3% &middot; M:0.5%. Assembly is complete and circularised; no contigs below 1 kb were retained.</p>
+   </div>
+   <div class="panel" style="margin-top:16px">
      <p class="panel-title">Reference coverage · contig_7</p>
      <p class="panel-sub">Read depth across the 109 kb replicon (1 kb bins) — real Oxford Nanopore example (EPI2ME wf-bacterial-genomes). Hover for position &amp; depth.</p>
      <div class="fig" id="covtrack"></div>
@@ -4826,8 +4813,6 @@ function renderCustom(body){
   const editing=78.3,sumv=sizes.reduce((a,b)=>a+b.v,0);
   sizes.forEach(o=>o.pct=o.s===0?0:o.v/sumv*editing);
   body.innerHTML=`
-   <div style="background:linear-gradient(90deg,rgba(125,91,166,.10),rgba(40,157,224,.05));border:1px solid var(--line);border-radius:10px;padding:11px 15px;margin-bottom:16px;font-size:13px;color:var(--muted)">
-     <b style="color:var(--ink)">Custom &amp; bespoke projects</b> — when a study doesn't fit a standard pipeline we build one. Below: a real-world <b style="color:var(--purple)">CRISPR editing</b> quantification, plus our amplicon capabilities.</div>
    <div class="grid2" style="grid-template-columns:1.4fr 1fr">
      <div class="panel">
         <p class="panel-title">CRISPR editing outcomes · indel spectrum</p>
