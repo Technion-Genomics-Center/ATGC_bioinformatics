@@ -130,3 +130,92 @@ pheatmap(M,
          fontsize = 10, fontsize_row = 9, fontsize_col = 10,
          angle_col = 45, legend = TRUE)
 ```
+
+```{r celltype-setup}
+# Cell-type annotation by three independent methods, compared per Seurat
+# cluster. Clusters map onto the same 8 cell types (and palette) as above.
+set.seed(11)
+clusters <- data.frame(
+  cl = paste0("C", 0:9),
+  ct = c("Stroma","Sertoli","Peritubular Myoid","Stroma","Germ","Germ",
+         "Endothelial","Macrophage","Leydig","Innate Lymph"))
+ref_labels <- c(ct_levels, "Fibroblast", "Smooth muscle")
+```
+
+```{r singler-heatmap, fig.width=5.6, fig.height=3.5}
+# SingleR-style score heatmap: per-cluster median correlation to each
+# reference label. The assigned label scores highest; related labels score
+# moderately (e.g. Stroma vs Fibroblast, Myoid vs Smooth muscle).
+related <- list("Stroma"=c("Fibroblast","Peritubular Myoid"),
+  "Peritubular Myoid"=c("Smooth muscle","Stroma"),
+  "Sertoli"="Germ","Germ"="Sertoli","Endothelial"="Stroma",
+  "Macrophage"="Innate Lymph","Innate Lymph"="Macrophage",
+  "Leydig"=c("Stroma","Fibroblast"))
+S <- matrix(0, length(ref_labels), nrow(clusters),
+            dimnames = list(ref_labels, clusters$cl))
+for (j in seq_len(nrow(clusters))) {
+  own <- clusters$ct[j]
+  s <- runif(length(ref_labels), 0.08, 0.20)
+  s[match(related[[own]], ref_labels)] <- runif(length(related[[own]]), 0.30, 0.42)
+  s[match(own, ref_labels)] <- runif(1, 0.52, 0.66)
+  S[, j] <- s
+}
+# Leydig cluster: SingleR is torn between Leydig and Stroma (low delta).
+S["Stroma", "C8"] <- S["Leydig", "C8"] + 0.02
+ann_col <- data.frame(`Cell type` = factor(clusters$ct, levels = ct_levels),
+                      check.names = FALSE, row.names = clusters$cl)
+pheatmap(S,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         color = colorRampPalette(c("#fff7ec","#fdd49e","#fc8d59",
+                                    "#d7301f","#7f0000"))(100),
+         annotation_col = ann_col,
+         annotation_colors = list(`Cell type` = pal),
+         annotation_names_col = FALSE, annotation_legend = FALSE,
+         border_color = "#ffffff",
+         cellwidth = 24, cellheight = 16,
+         fontsize = 10, fontsize_row = 9.5, fontsize_col = 10,
+         angle_col = 0, legend = TRUE)
+```
+
+```{r method-agreement, fig.width=6.0, fig.height=4.6}
+# Per-cluster calls from each method; consensus = majority label.
+calls <- clusters
+calls$SingleR <- calls$ct
+calls$Markers <- calls$ct
+calls$LLM     <- calls$ct
+calls$SingleR[calls$cl == "C8"] <- "Stroma"         # weak reference match
+calls$LLM[calls$cl == "C9"]     <- "Macrophage"     # ambiguous immune cluster
+calls$Consensus <- calls$ct
+calls$Support <- c(3,3,3,3,3,3,3,3,2,2)
+long <- rbind(
+  data.frame(cl = calls$cl, method = "SingleR",   label = calls$SingleR),
+  data.frame(cl = calls$cl, method = "Markers",   label = calls$Markers),
+  data.frame(cl = calls$cl, method = "LLM",       label = calls$LLM),
+  data.frame(cl = calls$cl, method = "Consensus", label = calls$Consensus))
+long$method <- factor(long$method, levels = c("SingleR","Markers","LLM","Consensus"))
+long$cl <- factor(long$cl, levels = rev(clusters$cl))
+long$agree <- long$label == calls$ct[match(long$cl, calls$cl)]
+sup <- data.frame(cl = factor(calls$cl, levels = rev(clusters$cl)),
+                  txt = paste0(calls$Support, "/3"), full = calls$Support == 3)
+
+ggplot(long, aes(method, cl)) +
+  geom_tile(aes(fill = label, alpha = agree), colour = "white", linewidth = 1.2) +
+  geom_text(aes(label = sub("Peritubular Myoid", "Myoid", label)),
+            size = 2.9, colour = "#1d2a33") +
+  geom_text(data = sup, aes(x = "Support", y = cl, label = txt,
+                            colour = full), size = 3.2, fontface = "bold",
+            inherit.aes = FALSE) +
+  geom_vline(xintercept = 3.5, colour = "#42525e", linewidth = 0.5) +
+  scale_fill_manual(values = pal, guide = "none") +
+  scale_alpha_manual(values = c(`TRUE` = 0.85, `FALSE` = 0.35), guide = "none") +
+  scale_colour_manual(values = c(`TRUE` = "#2b8a4b", `FALSE` = "#c2541b"),
+                      guide = "none") +
+  scale_x_discrete(position = "top",
+                   limits = c("SingleR","Markers","LLM","Consensus","Support")) +
+  labs(x = NULL, y = "Seurat cluster") +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid = element_blank(),
+        axis.text.x = element_text(face = "bold", colour = "#22323f"),
+        axis.text.y = element_text(colour = "#42525e"),
+        axis.title.y = element_text(colour = "#42525e"))
+```

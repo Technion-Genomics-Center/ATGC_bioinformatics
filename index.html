@@ -268,17 +268,13 @@ const SERVICES=[
    tools:["STAR","featureCounts","DESeq2","fgsea / msigdbr","EnhancedVolcano","pheatmap"],
    tag:"36 samples · 2 conditions<br>ref: <b>GRCh38</b> · paired-end",render:renderRNAseq},
   {id:"scrna",ic:"sc",name:"scRNA-seq",
-   desc:"Single-cell expression: QC, dimensionality reduction, clustering and cell-type annotation.",
-   tools:["Cell Ranger","Seurat","Scanpy","Harmony","UMAP"],
+   desc:"Single-cell expression: QC, dimensionality reduction, clustering and cell-type annotation. Integrated cell-type annotation using multiple independent approaches, including reference-based (SingleR), marker-based, and LLM-assisted methods. Results are compared to identify the most supported cell-type assignments.",
+   tools:["Cell Ranger","Seurat","Scanpy","Harmony","UMAP","SingleR","LLM-based cell-type annotation","User-provided marker-based annotation"],
    tag:"54,562 cells · 8 cell types<br>10x Genomics 3' · mouse testis",render:renderUMAP},
   {id:"visiumhd",ic:"sp",name:"Visium HD",
    desc:"10x Genomics Visium HD spatial gene expression on FFPE tissue — whole-transcriptome capture mapped at single-cell scale, analysed in Seurat and delivered with Loupe Browser.",
    tools:["Space Ranger","Seurat","Loupe Browser"],
    tag:"10x Visium HD · FFPE<br>single-cell-scale spatial",render:renderVisiumHD},
-  {id:"cosmx",ic:"cmx",name:"CosMx + AtoMx",
-   desc:"NanoString CosMx imaging-based single-cell spatial transcriptomics, processed through the AtoMx platform — cell segmentation, single-cell typing, niche and spatial-DE analysis in Seurat.",
-   tools:["AtoMx","Seurat","Giotto","Napari"],
-   tag:"NanoString CosMx<br>imaging-based single-cell spatial",render:renderCosMx},
   {id:"variant",ic:"var",name:"Variant Analysis",
    desc:"SNP / indel / structural-variant calling, annotation and clinical interpretation.",
    tools:["BWA-MEM2","GATK4","DeepVariant","VEP","ANNOVAR"],
@@ -314,12 +310,11 @@ const SERVICES=[
    and are written from each report's own tools and figures. */
 const OUTPUTS={
   rnaseq:{m:"<b>Main results file.</b> A .csv file with gene expression data, including counts, fold change and adjusted p-value.",i:["<b>Volcano plot.</b> For visualizing differential expression.","<b>Heatmap.</b> For visualizing gene expression across samples.","<b>PCA plot.</b> To assess sample similarity and detect potential outliers.","<b>Coverage plot.</b> To check read coverage across genes or the entire transcriptome using a genome browser such as IGV.","<b>GSEA results.</b> Ranked pathway table with enrichment scores and adjusted p-values."]},
-  scrna:{m:"<b>Main results file.</b> An .html file summarizing the analysis results, including UMAP, clustering and marker expression dot plots.",i:["<b>Seurat object</b> in RDS format, consisting of expression values for each gene across all cells.","<b>Cell Ranger count outputs</b> (web summary and filtered_feature_bc_matrix).","<b>A .cloupe file</b> for results viewing and further analysis using 10x Genomics Loupe Browser.","Additional analysis results and plots can be generated upon request."]},
+  scrna:{m:"<b>Main results file.</b> An .html file summarizing the analysis results, including UMAP, clustering and marker expression dot plots.",i:["<b>Seurat object</b> in RDS format, consisting of expression values for each gene across all cells.","<b>Cell-type annotation table.</b> Per-cluster calls from SingleR, marker-based and LLM-assisted annotation, with the consensus label and its support.","<b>Cell Ranger count outputs</b> (web summary and filtered_feature_bc_matrix).","<b>A .cloupe file</b> for results viewing and further analysis using 10x Genomics Loupe Browser.","Additional analysis results and plots can be generated upon request."]},
   variant:{m:"<b>Main results file.</b> A .vcf file containing all identified variants with details such as genotype, reference allele and variant allele.",i:["<b>SNP / indel list.</b> A detailed list of variants along with their annotations, including functional predictions.","<b>IGV browser view.</b> A snapshot of the alignment and variants across specific regions."]},
   chip:{m:"<b>Main results file.</b> A .bed or .narrowPeak file containing the identified peaks and their genomic coordinates.",i:["<b>Differential peak analysis</b> (optional). Peaks showing significant differences between conditions, with fold change and p-value.","<b>Heatmap.</b> Peak binding at transcription start site regions.","<b>Genomic annotation pie chart.</b> Distribution of statistically enriched regions across the genome.","<b>PCA plot.</b> To check variability between samples and detect potential outliers.","<b>IGV view.</b> A snapshot showing binding regions or peak enrichment across the genome.","For CUT&amp;RUN, peaks are additionally called with SEACR on the spike-in normalised bedGraph."]},
   meta16s:{m:"<b>Main results file.</b> A .csv file with taxonomic abundances at different levels, for example genus and species.",i:["<b>Bar chart.</b> Microbial abundance at different taxonomic levels.","<b>Alpha / beta diversity plots.</b> To assess diversity within and between samples."]},
   visiumhd:{m:"<b>Main results file.</b> A Space Ranger output bundle with the filtered feature-barcode matrix, tissue image and spatial coordinates.",i:["<b>Seurat object</b> in RDS format, with binned expression and spatial coordinates.","<b>A .cloupe file</b> for panning, zooming and overlaying any gene on the tissue in Loupe Browser.","<b>Cluster and marker tables.</b> Graph-based clusters with per-cluster marker genes.","<b>Spatial feature plots.</b> Selected genes mapped onto the tissue image."]},
-  cosmx:{m:"<b>Main results file.</b> An AtoMx export with the single-cell expression matrix, cell metadata and segmentation polygons.",i:["<b>Seurat object</b> in RDS format, with per-cell counts, spatial coordinates and cell-type calls.","<b>Cell typing table.</b> Assigned cell types with the marker support behind each cluster.","<b>Niche and neighbourhood analysis.</b> Spatial domains and cell-to-cell proximity summaries.","<b>Multiplexed images.</b> Marker channel overlays for the imaged tissue."]},
   methyl:{m:"<b>Main results file.</b> A .csv file of per-cytosine methylation calls with coverage and methylation percentage.",i:["<b>DMC / DMR table.</b> Differentially methylated cytosines and regions with methylation difference and adjusted p-value.","<b>Genomic context annotation.</b> Regions annotated to promoters, gene bodies, CpG islands and shores.","<b>Heatmap and violin plots.</b> Per-sample methylation across the top differential regions.","<b>Bismark coverage files</b> loadable in a genome browser."]},
   assembly:{m:"<b>Main results file.</b> A polished assembly in FASTA format with per-contig statistics.",i:["<b>Assembly summary.</b> Contig count, total length, N50, L50, GC content and mean coverage (QUAST).","<b>BUSCO completeness report.</b> Complete, fragmented and missing single-copy orthologues.","<b>Coverage tracks.</b> Read depth across each contig, loadable in IGV.","<b>Variant annotation table</b> (optional). snpEff effects and classes where a reference is available."]},
   olink:{m:"<b>Main results file.</b> A normalised NPX matrix in .csv format, one row per sample and one column per protein assay.",i:["<b>Sample and assay QC report.</b> Per-sample NPX deviation, control performance and QC flags.","<b>Differential abundance table.</b> NPX log2 fold change with adjusted p-value for every protein.","<b>Volcano and PCA plots.</b> Group separation and the proteins driving it.","<b>Pathway enrichment</b> run with the panel itself as the background set."]}
@@ -366,7 +361,6 @@ function renderLanding(body){
          <button class="svc-btn" onclick="selectById('rnaseq')"><span class="svc-name">RNA-seq (bulk)</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
          <button class="svc-btn" onclick="selectById('scrna')"><span class="svc-name">scRNA-seq</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
          <button class="svc-btn" onclick="selectById('visiumhd')"><span class="svc-name">Visium HD</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
-         <button class="svc-btn" onclick="selectById('cosmx')"><span class="svc-name">CosMx + AtoMx</span><span class="svc-go" aria-hidden="true">&rarr;</span></button>
        </div>
      </section>
      <section class="svc-group" style="--g:#fda13c">
@@ -682,23 +676,23 @@ function renderRNAseq(body){
         ["Oxidative phosphorylation",-2.33,9e-6,196],["MYC targets V1",-2.07,4e-5,194],
         ["Fatty-acid metabolism",-1.74,7e-4,152],["p53 pathway",-1.52,2.1e-3,191]],
       "GO · biological process":[
-        ["leukocyte migration",2.46,2e-6,310],["response to interferon-γ",2.22,1e-5,142],
-        ["extracellular matrix organization",2.01,9e-5,265],["cytokine-mediated signaling",1.88,3e-4,488],
-        ["cell-cycle G2/M transition",1.66,9e-4,180],["regulation of angiogenesis",1.59,1.6e-3,121],
-        ["oxidative phosphorylation",-2.39,5e-6,128],["ribosome biogenesis",-2.11,3e-5,243],
-        ["mitochondrial translation",-1.81,6e-4,165],["fatty-acid β-oxidation",-1.57,2.4e-3,57]],
+        ["leukocyte migration",3.20,2e-6,310],["response to interferon-γ",2.89,1e-5,142],
+        ["extracellular matrix organization",2.61,9e-5,265],["cytokine-mediated signaling",2.44,3e-4,488],
+        ["cell-cycle G2/M transition",2.16,9e-4,180],["regulation of angiogenesis",2.07,1.6e-3,121],
+        ["oxidative phosphorylation",-3.11,5e-6,128],["ribosome biogenesis",-2.74,3e-5,243],
+        ["mitochondrial translation",-2.35,6e-4,165],["fatty-acid β-oxidation",-2.04,2.4e-3,57]],
       "KEGG · pathways":[
-        ["Cytokine–cytokine receptor",2.33,6e-6,265],["TNF signaling pathway",2.14,4e-5,110],
-        ["IL-17 signaling pathway",1.97,2e-4,92],["ECM-receptor interaction",1.79,7e-4,82],
-        ["Focal adhesion",1.62,1.3e-3,197],["Cell cycle",1.55,2.0e-3,124],
-        ["Oxidative phosphorylation",-2.41,3e-6,133],["Ribosome",-2.18,2e-5,131],
-        ["Parkinson disease",-1.72,8e-4,142],["Citrate cycle (TCA)",-1.50,3.0e-3,30]],
+        ["Cytokine–cytokine receptor",1.91,6e-6,265],["TNF signaling pathway",1.75,4e-5,110],
+        ["IL-17 signaling pathway",1.62,2e-4,92],["ECM-receptor interaction",1.47,7e-4,82],
+        ["Focal adhesion",1.33,1.3e-3,197],["Cell cycle",1.27,2.0e-3,124],
+        ["Oxidative phosphorylation",-1.98,3e-6,133],["Ribosome",-1.79,2e-5,131],
+        ["Parkinson disease",-1.41,8e-4,142],["Citrate cycle (TCA)",-1.23,3.0e-3,30]],
       "Reactome":[
-        ["Interferon signaling",2.37,4e-6,196],["Signaling by interleukins",2.09,3e-5,461],
-        ["Extracellular matrix organization",1.95,1e-4,301],["Neutrophil degranulation",1.77,8e-4,478],
-        ["Cell cycle, mitotic",1.60,1.5e-3,492],["Collagen formation",1.53,2.3e-3,90],
-        ["Respiratory electron transport",-2.36,5e-6,108],["Translation",-2.04,4e-5,279],
-        ["rRNA processing",-1.79,7e-4,212],["Metabolism of lipids",-1.51,3.0e-3,712]]
+        ["Interferon signaling",2.73,4e-6,196],["Signaling by interleukins",2.40,3e-5,461],
+        ["Extracellular matrix organization",2.24,1e-4,301],["Neutrophil degranulation",2.04,8e-4,478],
+        ["Cell cycle, mitotic",1.84,1.5e-3,492],["Collagen formation",1.76,2.3e-3,90],
+        ["Respiratory electron transport",-2.01,5e-6,108],["Translation",-1.73,4e-5,279],
+        ["rRNA processing",-1.52,7e-4,212],["Metabolism of lipids",-1.28,3.0e-3,712]]
     };
     const gkeys=Object.keys(COLL);
     const gW=560,gm={l:212,r:54,t:14,b:38},rowH=30;
@@ -712,9 +706,12 @@ function renderRNAseq(body){
       const H=sets.length*rowH+gm.t+gm.b;
       dotEl.innerHTML='';
       const svg=E('svg',{viewBox:`0 0 ${gW} ${H}`});dotEl.appendChild(svg);
-      const xmin=-3,xmax=3,X=v=>gm.l+(v-xmin)/(xmax-xmin)*(gW-gm.l-gm.r);
-      for(let gx=-3;gx<=3;gx++){svg.appendChild(E('line',{x1:X(gx),y1:gm.t,x2:X(gx),y2:H-gm.b,class:'gridline'}));
-        svg.appendChild(Object.assign(E('text',{x:X(gx),y:H-gm.b+15,'text-anchor':'middle',class:'axlab'}),{textContent:gx}));}
+      // x range follows the selected collection's NES spread (0 always shown)
+      const nesv=sets.map(s=>s[1]);
+      const xmin=Math.floor((Math.min(0,...nesv)-0.3)/0.5)*0.5,xmax=Math.ceil((Math.max(0,...nesv)+0.3)/0.5)*0.5;
+      const xstep=xmax-xmin>3.5?1:0.5,X=v=>gm.l+(v-xmin)/(xmax-xmin)*(gW-gm.l-gm.r);
+      for(let gx=Math.ceil(xmin/xstep)*xstep;gx<=xmax+1e-9;gx+=xstep){svg.appendChild(E('line',{x1:X(gx),y1:gm.t,x2:X(gx),y2:H-gm.b,class:'gridline'}));
+        svg.appendChild(Object.assign(E('text',{x:X(gx),y:H-gm.b+15,'text-anchor':'middle',class:'axlab'}),{textContent:+gx.toFixed(1)}));}
       svg.appendChild(E('line',{x1:X(0),y1:gm.t,x2:X(0),y2:H-gm.b,stroke:'#c9d4de','stroke-width':1.4}));
       const sizes=sets.map(s=>s[3]),smin=Math.min(...sizes),smax=Math.max(...sizes);
       const R=s=>5+(s-smin)/(smax-smin+1e-9)*8;
@@ -3993,7 +3990,429 @@ function renderUMAP(body){
 </svg></div>
      </div>
    </div>
-   <p class="note">Delivered as a Seurat/Scanpy object plus an HTML browser where any gene overlays on the embedding. Canonical markers light up only in their own column, confirming each cluster's identity.</p>`;
+   <div class="grid2" style="grid-template-columns:1fr 1fr;margin-top:24px">
+     <div class="panel">
+        <p class="panel-sub">median correlation of each cluster to every reference label · top bar = final cell type</p>
+        <div class="fig" id="singlerheat"><svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 403.20 252.00' style='width:100%;height:auto;display:block'>
+<g class='svglite'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw0MDMuMjB8MC4wMHwyNTIuMDA='>
+    <rect x='0.00' y='0.00' width='403.20' height='252.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw0MDMuMjB8MC4wMHwyNTIuMDA=)'>
+<rect x='26.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #7F0000;' />
+<rect x='26.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FFF7EC;' />
+<rect x='26.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FC945F;' />
+<rect x='26.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FFF7EC;' />
+<rect x='26.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF5E8;' />
+<rect x='26.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDAAC;' />
+<rect x='26.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF5E8;' />
+<rect x='26.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<rect x='26.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FCA26D;' />
+<rect x='26.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF4E5;' />
+<rect x='50.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDEB6;' />
+<rect x='50.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #C9281A;' />
+<rect x='50.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE6C6;' />
+<rect x='50.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FC9965;' />
+<rect x='50.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<rect x='50.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF2E2;' />
+<rect x='50.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE8CC;' />
+<rect x='50.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='50.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE3BF;' />
+<rect x='50.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEDD5;' />
+<rect x='74.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FC9C68;' />
+<rect x='74.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='74.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #C62619;' />
+<rect x='74.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF4E5;' />
+<rect x='74.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='74.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE8CC;' />
+<rect x='74.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<rect x='74.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='74.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='74.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #F98755;' />
+<rect x='98.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #A2130C;' />
+<rect x='98.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF5E8;' />
+<rect x='98.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #F27449;' />
+<rect x='98.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='98.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE8CC;' />
+<rect x='98.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE4C3;' />
+<rect x='98.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<rect x='98.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDDB3;' />
+<rect x='98.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FC8E5A;' />
+<rect x='98.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FFF7EC;' />
+<rect x='122.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE6C6;' />
+<rect x='122.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #F57C4E;' />
+<rect x='122.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<rect x='122.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #BE2216;' />
+<rect x='122.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEACF;' />
+<rect x='122.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='122.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDEB6;' />
+<rect x='122.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF2E2;' />
+<rect x='122.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE6C6;' />
+<rect x='122.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF4E5;' />
+<rect x='146.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE6C6;' />
+<rect x='146.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FCA26D;' />
+<rect x='146.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF2E2;' />
+<rect x='146.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #7F0000;' />
+<rect x='146.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE8CC;' />
+<rect x='146.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='146.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE4C3;' />
+<rect x='146.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE3BF;' />
+<rect x='146.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='146.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='170.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FC945F;' />
+<rect x='170.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEFDC;' />
+<rect x='170.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<rect x='170.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEDD5;' />
+<rect x='170.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #BE2216;' />
+<rect x='170.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF5E8;' />
+<rect x='170.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE8CC;' />
+<rect x='170.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE8CC;' />
+<rect x='170.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='170.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDEB6;' />
+<rect x='194.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE4C3;' />
+<rect x='194.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDEB6;' />
+<rect x='194.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='194.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEDD5;' />
+<rect x='194.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE0B9;' />
+<rect x='194.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #9B0F0A;' />
+<rect x='194.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEACF;' />
+<rect x='194.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FCA26D;' />
+<rect x='194.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEFDC;' />
+<rect x='194.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE0B9;' />
+<rect x='218.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #BB2015;' />
+<rect x='218.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE0B9;' />
+<rect x='218.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE3BF;' />
+<rect x='218.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='218.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEBD2;' />
+<rect x='218.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='218.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #C62619;' />
+<rect x='218.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE3BF;' />
+<rect x='218.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #F67F50;' />
+<rect x='218.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE7C9;' />
+<rect x='242.98' y='46.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEACF;' />
+<rect x='242.98' y='62.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDEB6;' />
+<rect x='242.98' y='78.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDE3BF;' />
+<rect x='242.98' y='94.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<rect x='242.98' y='110.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FDDCB0;' />
+<rect x='242.98' y='126.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #ED6942;' />
+<rect x='242.98' y='142.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEE8CC;' />
+<rect x='242.98' y='158.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #BE2216;' />
+<rect x='242.98' y='174.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEF1DF;' />
+<rect x='242.98' y='190.92' width='24.00' height='16.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FEEED9;' />
+<text x='38.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C0</text>
+<text x='62.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C1</text>
+<text x='86.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C2</text>
+<text x='110.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C3</text>
+<text x='134.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C4</text>
+<text x='158.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C5</text>
+<text x='182.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C6</text>
+<text x='206.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C7</text>
+<text x='230.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C8</text>
+<text x='254.98' y='217.08' text-anchor='middle' style='font-size: 10.00px; font-family: "Arial";' textLength='12.78px' lengthAdjust='spacingAndGlyphs'>C9</text>
+<text x='269.98' y='58.32' style='font-size: 9.50px; font-family: "Arial";' textLength='30.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='269.98' y='74.32' style='font-size: 9.50px; font-family: "Arial";' textLength='26.92px' lengthAdjust='spacingAndGlyphs'>Sertoli</text>
+<text x='269.98' y='90.32' style='font-size: 9.50px; font-family: "Arial";' textLength='73.89px' lengthAdjust='spacingAndGlyphs'>Peritubular Myoid</text>
+<text x='269.98' y='106.32' style='font-size: 9.50px; font-family: "Arial";' textLength='23.73px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='269.98' y='122.32' style='font-size: 9.50px; font-family: "Arial";' textLength='47.00px' lengthAdjust='spacingAndGlyphs'>Endothelial</text>
+<text x='269.98' y='138.32' style='font-size: 9.50px; font-family: "Arial";' textLength='52.78px' lengthAdjust='spacingAndGlyphs'>Macrophage</text>
+<text x='269.98' y='154.32' style='font-size: 9.50px; font-family: "Arial";' textLength='27.98px' lengthAdjust='spacingAndGlyphs'>Leydig</text>
+<text x='269.98' y='170.32' style='font-size: 9.50px; font-family: "Arial";' textLength='57.19px' lengthAdjust='spacingAndGlyphs'>Innate Lymph</text>
+<text x='269.98' y='186.32' style='font-size: 9.50px; font-family: "Arial";' textLength='41.69px' lengthAdjust='spacingAndGlyphs'>Fibroblast</text>
+<text x='269.98' y='202.32' style='font-size: 9.50px; font-family: "Arial";' textLength='65.45px' lengthAdjust='spacingAndGlyphs'>Smooth muscle</text>
+<rect x='26.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #E82281;' />
+<rect x='50.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #B388D9;' />
+<rect x='74.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #289DE0;' />
+<rect x='98.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #E82281;' />
+<rect x='122.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #E0A022;' />
+<rect x='146.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #E0A022;' />
+<rect x='170.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #E8615A;' />
+<rect x='194.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #00A3B8;' />
+<rect x='218.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #2BB673;' />
+<rect x='242.98' y='33.92' width='24.00' height='10.00' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #9CCC5A;' />
+<rect x='350.87' y='181.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FFF7EC;' />
+<rect x='350.87' y='179.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEF5E8;' />
+<rect x='350.87' y='178.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEF4E5;' />
+<rect x='350.87' y='176.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEF2E2;' />
+<rect x='350.87' y='175.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEF1DF;' />
+<rect x='350.87' y='173.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEEFDC;' />
+<rect x='350.87' y='172.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEEED9;' />
+<rect x='350.87' y='170.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEEDD5;' />
+<rect x='350.87' y='169.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEEBD2;' />
+<rect x='350.87' y='167.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEEACF;' />
+<rect x='350.87' y='166.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEE8CC;' />
+<rect x='350.87' y='164.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEE7C9;' />
+<rect x='350.87' y='163.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FEE6C6;' />
+<rect x='350.87' y='161.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDE4C3;' />
+<rect x='350.87' y='160.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDE3BF;' />
+<rect x='350.87' y='158.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDE1BC;' />
+<rect x='350.87' y='157.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDE0B9;' />
+<rect x='350.87' y='155.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDDEB6;' />
+<rect x='350.87' y='154.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDDDB3;' />
+<rect x='350.87' y='152.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDDCB0;' />
+<rect x='350.87' y='151.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDDAAC;' />
+<rect x='350.87' y='149.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDD9A9;' />
+<rect x='350.87' y='148.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDD7A6;' />
+<rect x='350.87' y='146.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDD6A3;' />
+<rect x='350.87' y='145.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FDD5A0;' />
+<rect x='350.87' y='143.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCD39D;' />
+<rect x='350.87' y='142.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCD09A;' />
+<rect x='350.87' y='140.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCCD97;' />
+<rect x='350.87' y='139.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCCA94;' />
+<rect x='350.87' y='137.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCC792;' />
+<rect x='350.87' y='136.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCC48F;' />
+<rect x='350.87' y='134.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCC28C;' />
+<rect x='350.87' y='133.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCBF89;' />
+<rect x='350.87' y='131.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCBC87;' />
+<rect x='350.87' y='130.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCB984;' />
+<rect x='350.87' y='128.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCB681;' />
+<rect x='350.87' y='127.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCB37E;' />
+<rect x='350.87' y='125.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCB07B;' />
+<rect x='350.87' y='124.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCAD79;' />
+<rect x='350.87' y='122.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCAB76;' />
+<rect x='350.87' y='121.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCA873;' />
+<rect x='350.87' y='119.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCA570;' />
+<rect x='350.87' y='118.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FCA26D;' />
+<rect x='350.87' y='116.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FC9F6B;' />
+<rect x='350.87' y='115.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FC9C68;' />
+<rect x='350.87' y='113.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FC9965;' />
+<rect x='350.87' y='112.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FC9762;' />
+<rect x='350.87' y='110.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FC945F;' />
+<rect x='350.87' y='109.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FC915D;' />
+<rect x='350.87' y='107.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FC8E5A;' />
+<rect x='350.87' y='106.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #FB8B57;' />
+<rect x='350.87' y='104.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #F98755;' />
+<rect x='350.87' y='103.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #F88353;' />
+<rect x='350.87' y='101.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #F67F50;' />
+<rect x='350.87' y='100.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #F57C4E;' />
+<rect x='350.87' y='98.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #F3784C;' />
+<rect x='350.87' y='97.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #F27449;' />
+<rect x='350.87' y='95.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #F07047;' />
+<rect x='350.87' y='94.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #EF6D45;' />
+<rect x='350.87' y='92.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #ED6942;' />
+<rect x='350.87' y='91.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #EC6540;' />
+<rect x='350.87' y='89.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #EA613E;' />
+<rect x='350.87' y='88.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #E95E3B;' />
+<rect x='350.87' y='86.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #E75A39;' />
+<rect x='350.87' y='85.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #E65637;' />
+<rect x='350.87' y='83.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #E45234;' />
+<rect x='350.87' y='82.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #E34E32;' />
+<rect x='350.87' y='80.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #E14B2F;' />
+<rect x='350.87' y='79.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #E0472D;' />
+<rect x='350.87' y='77.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #DE432B;' />
+<rect x='350.87' y='76.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #DD3F28;' />
+<rect x='350.87' y='74.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #DB3C26;' />
+<rect x='350.87' y='73.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #DA3824;' />
+<rect x='350.87' y='71.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #D83421;' />
+<rect x='350.87' y='70.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #D7301F;' />
+<rect x='350.87' y='68.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #D42E1E;' />
+<rect x='350.87' y='67.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #D02C1C;' />
+<rect x='350.87' y='65.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #CD2A1B;' />
+<rect x='350.87' y='64.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #C9281A;' />
+<rect x='350.87' y='62.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #C62619;' />
+<rect x='350.87' y='61.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #C22417;' />
+<rect x='350.87' y='59.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #BE2216;' />
+<rect x='350.87' y='58.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #BB2015;' />
+<rect x='350.87' y='56.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #B71F14;' />
+<rect x='350.87' y='55.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #B41D12;' />
+<rect x='350.87' y='53.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #B01B11;' />
+<rect x='350.87' y='52.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #AD1910;' />
+<rect x='350.87' y='50.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #A9170F;' />
+<rect x='350.87' y='49.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #A6150D;' />
+<rect x='350.87' y='47.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #A2130C;' />
+<rect x='350.87' y='46.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #9E110B;' />
+<rect x='350.87' y='44.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #9B0F0A;' />
+<rect x='350.87' y='43.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #970D08;' />
+<rect x='350.87' y='41.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #940B07;' />
+<rect x='350.87' y='40.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #900906;' />
+<rect x='350.87' y='38.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #8D0705;' />
+<rect x='350.87' y='37.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #890503;' />
+<rect x='350.87' y='35.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #860302;' />
+<rect x='350.87' y='34.42' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #820101;' />
+<rect x='350.87' y='32.92' width='10.00' height='1.50' style='stroke-width: 0.75; stroke: none; fill: #7F0000;' />
+<text x='364.87' y='181.27' style='font-size: 10.00px; font-family: "Arial";' textLength='13.91px' lengthAdjust='spacingAndGlyphs'>0.1</text>
+<text x='364.87' y='155.01' style='font-size: 10.00px; font-family: "Arial";' textLength='13.91px' lengthAdjust='spacingAndGlyphs'>0.2</text>
+<text x='364.87' y='128.76' style='font-size: 10.00px; font-family: "Arial";' textLength='13.91px' lengthAdjust='spacingAndGlyphs'>0.3</text>
+<text x='364.87' y='102.51' style='font-size: 10.00px; font-family: "Arial";' textLength='13.91px' lengthAdjust='spacingAndGlyphs'>0.4</text>
+<text x='364.87' y='76.26' style='font-size: 10.00px; font-family: "Arial";' textLength='13.91px' lengthAdjust='spacingAndGlyphs'>0.5</text>
+<text x='364.87' y='50.01' style='font-size: 10.00px; font-family: "Arial";' textLength='13.91px' lengthAdjust='spacingAndGlyphs'>0.6</text>
+</g>
+</g>
+</svg></div>
+     </div>
+     <div class="panel">
+        <p class="panel-title">Cell-type calls compared across methods</p>
+        <p class="panel-sub">SingleR, marker-based and LLM-assisted calls per cluster · faded tiles disagree with the consensus</p>
+        <div class="fig" id="ctagree"><svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 432.00 331.20' style='width:100%;height:auto;display:block'>
+<g class='svglite'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw0MzIuMDB8MC4wMHwzMzEuMjA='>
+    <rect x='0.00' y='0.00' width='432.00' height='331.20' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw0MzIuMDB8MC4wMHwzMzEuMjA=)'>
+<rect x='0.000000000000032' y='0.000000000000057' width='432.00' height='331.20' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+</g>
+<defs>
+  <clipPath id='cpMzQuNjB8NDI2LjUyfDE4LjU2fDMyNS43Mg=='>
+    <rect x='34.60' y='18.56' width='391.92' height='307.16' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMzQuNjB8NDI2LjUyfDE4LjU2fDMyNS43Mg==)'>
+<rect x='42.13' y='21.57' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='42.13' y='51.69' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #B388D9; fill-opacity: 0.85;' />
+<rect x='42.13' y='81.80' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #289DE0; fill-opacity: 0.85;' />
+<rect x='42.13' y='111.91' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='42.13' y='142.03' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='42.13' y='172.14' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='42.13' y='202.25' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E8615A; fill-opacity: 0.85;' />
+<rect x='42.13' y='232.37' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #00A3B8; fill-opacity: 0.85;' />
+<rect x='42.13' y='262.48' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.35;' />
+<rect x='42.13' y='292.60' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #9CCC5A; fill-opacity: 0.85;' />
+<rect x='117.50' y='21.57' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='117.50' y='51.69' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #B388D9; fill-opacity: 0.85;' />
+<rect x='117.50' y='81.80' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #289DE0; fill-opacity: 0.85;' />
+<rect x='117.50' y='111.91' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='117.50' y='142.03' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='117.50' y='172.14' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='117.50' y='202.25' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E8615A; fill-opacity: 0.85;' />
+<rect x='117.50' y='232.37' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #00A3B8; fill-opacity: 0.85;' />
+<rect x='117.50' y='262.48' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #2BB673; fill-opacity: 0.85;' />
+<rect x='117.50' y='292.60' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #9CCC5A; fill-opacity: 0.85;' />
+<rect x='192.87' y='21.57' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='192.87' y='51.69' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #B388D9; fill-opacity: 0.85;' />
+<rect x='192.87' y='81.80' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #289DE0; fill-opacity: 0.85;' />
+<rect x='192.87' y='111.91' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='192.87' y='142.03' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='192.87' y='172.14' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='192.87' y='202.25' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E8615A; fill-opacity: 0.85;' />
+<rect x='192.87' y='232.37' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #00A3B8; fill-opacity: 0.85;' />
+<rect x='192.87' y='262.48' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #2BB673; fill-opacity: 0.85;' />
+<rect x='192.87' y='292.60' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #00A3B8; fill-opacity: 0.35;' />
+<rect x='268.24' y='21.57' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='268.24' y='51.69' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #B388D9; fill-opacity: 0.85;' />
+<rect x='268.24' y='81.80' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #289DE0; fill-opacity: 0.85;' />
+<rect x='268.24' y='111.91' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E82281; fill-opacity: 0.85;' />
+<rect x='268.24' y='142.03' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='268.24' y='172.14' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E0A022; fill-opacity: 0.85;' />
+<rect x='268.24' y='202.25' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #E8615A; fill-opacity: 0.85;' />
+<rect x='268.24' y='232.37' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #00A3B8; fill-opacity: 0.85;' />
+<rect x='268.24' y='262.48' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #2BB673; fill-opacity: 0.85;' />
+<rect x='268.24' y='292.60' width='75.37' height='30.11' style='stroke-width: 2.56; stroke: #FFFFFF; stroke-linecap: butt; stroke-linejoin: miter; fill: #9CCC5A; fill-opacity: 0.85;' />
+<text x='79.82' y='39.59' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='79.82' y='69.70' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>Sertoli</text>
+<text x='79.82' y='99.81' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='22.02px' lengthAdjust='spacingAndGlyphs'>Myoid</text>
+<text x='79.82' y='129.93' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='79.82' y='160.04' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='79.82' y='190.15' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='79.82' y='220.27' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='40.84px' lengthAdjust='spacingAndGlyphs'>Endothelial</text>
+<text x='79.82' y='250.38' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='45.91px' lengthAdjust='spacingAndGlyphs'>Macrophage</text>
+<text x='79.82' y='280.49' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='79.82' y='310.61' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='49.73px' lengthAdjust='spacingAndGlyphs'>Innate Lymph</text>
+<text x='155.19' y='39.59' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='155.19' y='69.70' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>Sertoli</text>
+<text x='155.19' y='99.81' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='22.02px' lengthAdjust='spacingAndGlyphs'>Myoid</text>
+<text x='155.19' y='129.93' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='155.19' y='160.04' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='155.19' y='190.15' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='155.19' y='220.27' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='40.84px' lengthAdjust='spacingAndGlyphs'>Endothelial</text>
+<text x='155.19' y='250.38' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='45.91px' lengthAdjust='spacingAndGlyphs'>Macrophage</text>
+<text x='155.19' y='280.49' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='24.33px' lengthAdjust='spacingAndGlyphs'>Leydig</text>
+<text x='155.19' y='310.61' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='49.73px' lengthAdjust='spacingAndGlyphs'>Innate Lymph</text>
+<text x='230.56' y='39.59' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='230.56' y='69.70' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>Sertoli</text>
+<text x='230.56' y='99.81' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='22.02px' lengthAdjust='spacingAndGlyphs'>Myoid</text>
+<text x='230.56' y='129.93' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='230.56' y='160.04' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='230.56' y='190.15' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='230.56' y='220.27' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='40.84px' lengthAdjust='spacingAndGlyphs'>Endothelial</text>
+<text x='230.56' y='250.38' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='45.91px' lengthAdjust='spacingAndGlyphs'>Macrophage</text>
+<text x='230.56' y='280.49' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='24.33px' lengthAdjust='spacingAndGlyphs'>Leydig</text>
+<text x='230.56' y='310.61' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='45.91px' lengthAdjust='spacingAndGlyphs'>Macrophage</text>
+<text x='305.93' y='39.59' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='305.93' y='69.70' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>Sertoli</text>
+<text x='305.93' y='99.81' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='22.02px' lengthAdjust='spacingAndGlyphs'>Myoid</text>
+<text x='305.93' y='129.93' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='26.61px' lengthAdjust='spacingAndGlyphs'>Stroma</text>
+<text x='305.93' y='160.04' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='305.93' y='190.15' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='20.64px' lengthAdjust='spacingAndGlyphs'>Germ</text>
+<text x='305.93' y='220.27' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='40.84px' lengthAdjust='spacingAndGlyphs'>Endothelial</text>
+<text x='305.93' y='250.38' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='45.91px' lengthAdjust='spacingAndGlyphs'>Macrophage</text>
+<text x='305.93' y='280.49' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='24.33px' lengthAdjust='spacingAndGlyphs'>Leydig</text>
+<text x='305.93' y='310.61' text-anchor='middle' style='font-size: 8.25px;fill: #1D2A33; font-family: "Arial";' textLength='49.73px' lengthAdjust='spacingAndGlyphs'>Innate Lymph</text>
+<text x='381.30' y='39.88' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='70.00' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='100.11' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='130.22' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='160.34' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='190.45' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='220.57' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='250.68' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #2B8A4B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>3/3</text>
+<text x='381.30' y='280.79' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #C2541B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>2/3</text>
+<text x='381.30' y='310.91' text-anchor='middle' style='font-size: 9.10px; font-weight: bold;fill: #C2541B; font-family: "Arial";' textLength='12.66px' lengthAdjust='spacingAndGlyphs'>2/3</text>
+<line x1='268.24' y1='325.72' x2='268.24' y2='18.56' style='stroke-width: 1.07; stroke: #42525E; stroke-linecap: butt;' />
+</g>
+<g clip-path='url(#cpMC4wMHw0MzIuMDB8MC4wMHwzMzEuMjA=)'>
+<text x='79.82' y='11.78' text-anchor='middle' style='font-size: 8.80px; font-weight: bold;fill: #22323F; font-family: "Arial";' textLength='32.75px' lengthAdjust='spacingAndGlyphs'>SingleR</text>
+<text x='155.19' y='11.78' text-anchor='middle' style='font-size: 8.80px; font-weight: bold;fill: #22323F; font-family: "Arial";' textLength='33.73px' lengthAdjust='spacingAndGlyphs'>Markers</text>
+<text x='230.56' y='11.78' text-anchor='middle' style='font-size: 8.80px; font-weight: bold;fill: #22323F; font-family: "Arial";' textLength='18.08px' lengthAdjust='spacingAndGlyphs'>LLM</text>
+<text x='305.93' y='11.78' text-anchor='middle' style='font-size: 8.80px; font-weight: bold;fill: #22323F; font-family: "Arial";' textLength='47.42px' lengthAdjust='spacingAndGlyphs'>Consensus</text>
+<text x='381.30' y='11.78' text-anchor='middle' style='font-size: 8.80px; font-weight: bold;fill: #22323F; font-family: "Arial";' textLength='33.72px' lengthAdjust='spacingAndGlyphs'>Support</text>
+<text x='29.66' y='310.80' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C9</text>
+<text x='29.66' y='280.69' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C8</text>
+<text x='29.66' y='250.58' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C7</text>
+<text x='29.66' y='220.46' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C6</text>
+<text x='29.66' y='190.35' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C5</text>
+<text x='29.66' y='160.23' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C4</text>
+<text x='29.66' y='130.12' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C3</text>
+<text x='29.66' y='100.01' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C2</text>
+<text x='29.66' y='69.89' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C1</text>
+<text x='29.66' y='39.78' text-anchor='end' style='font-size: 8.80px;fill: #42525E; font-family: "Arial";' textLength='11.25px' lengthAdjust='spacingAndGlyphs'>C0</text>
+<text transform='translate(13.36,172.14) rotate(-90)' text-anchor='middle' style='font-size: 11.00px;fill: #42525E; font-family: "Arial";' textLength='67.91px' lengthAdjust='spacingAndGlyphs'>Seurat cluster</text>
+</g>
+</g>
+</svg></div>
+     </div>
+   </div>
+   <p class="note">Delivered as a Seurat/Scanpy object plus an HTML browser where any gene overlays on the embedding. Canonical markers light up only in their own column, confirming each cluster's identity. Where the three annotation methods disagree, the consensus label is reported with its level of support.</p>`;
 }
 
 /* 3. Spatial & single-cell (10x) */
@@ -4020,34 +4439,6 @@ function renderVisiumHD(body){
     hdImg.onerror=()=>{hdPh.innerHTML="Could not load demo";};
     hdImg.src=hdImg.getAttribute("data-src");}
   loadHD();
-}
-
-function renderCosMx(body){
-  body.innerHTML=`
-   <div class="grid2">
-     <div class="panel">
-        <p class="panel-title">Single-cell spatial · CosMx + AtoMx</p>
-        <p class="panel-sub">Imaging-based spatial transcriptomics at sub-cellular resolution — every cell segmented, annotated and placed in tissue.</p>
-        <div class="fig" style="margin-top:12px"><img src="assets/cosmx-multiplex.png" alt="CosMx multiplexed imaging — layered marker channels of the same tissue" style="width:100%;max-width:430px;display:block;margin:0 auto"></div>
-        <p class="panel-sub" style="margin-top:7px;margin-bottom:0;text-align:center">Multiplexed imaging stack — marker channels of one tissue (CosMx)</p>
-     </div>
-     <div>
-        <div class="panel">
-          <p class="panel-title">What we offer</p>
-          <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.62">NanoString <b style="color:var(--ink)">CosMx</b> data processed through the <b style="color:var(--ink)">AtoMx</b> Spatial Informatics Platform — from targeted panels up to the whole transcriptome.</p>
-          <ul style="font-size:12.5px;color:var(--muted);margin:0;padding-left:18px;line-height:1.7">
-            <li>cell segmentation &amp; single-cell typing</li>
-            <li>spatial niche / neighborhood analysis</li>
-            <li>ligand–receptor &amp; region-based DE</li>
-          </ul>
-        </div>
-     </div>
-   </div>
-   <div class="panel" style="margin-top:16px">
-     <p class="panel-title">CosMx · 1,000-plex RNA on FFPE</p>
-     <p class="panel-sub">Whole-tissue view and a cell-type-specific zoom (FFPE melanoma) — single-molecule transcripts mapped to segmented cells.</p>
-     <div class="fig"><img src="assets/cosmx-1000plex.jpg" alt="CosMx 1000-plex RNA expression on FFPE melanoma — whole tissue and cell-type-specific zoom" style="width:100%;display:block;border-radius:8px;border:1px solid var(--line)"></div>
-   </div>`;
 }
 
 
